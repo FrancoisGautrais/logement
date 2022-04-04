@@ -43,7 +43,7 @@ class BlotScrapper(ListScrapper):
     DOMAIN="www.blot-immobilier.fr"
 
     def find_elements(self):
-        return [ x for x in self.d(".bloc_annonce")]
+        return [ x for x in self.d(".search_results > .container > .bloc_annonce")]
 
 
 BlotThubnailScrapper.register()

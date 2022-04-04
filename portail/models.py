@@ -1,7 +1,9 @@
+import datetime
 import json
 
-from django.db import models
 
+from django.db import models
+from logement.libs.scrapper import blot, ouest_france
 
 
 # Create your models here.
@@ -11,15 +13,16 @@ class Annonce(models.Model):
     id : str  = models.TextField(primary_key=True)
     site_id: str = models.TextField()
     title : str  = models.TextField()
-    content : str  = models.TextField()
-    imgs : list  = models.TextField()
-    address : str  = models.TextField()
-    prix : float  = models.FloatField()
-    surface : float  = models.FloatField()
-    url : str  = models.FloatField()
-    phones : list = models.TextField()
-    data : dict = models.TextField()
+    content : str  = models.TextField(blank=True, null=True)
+    imgs : list  = models.TextField(blank=True, null=True)
+    address : str  = models.TextField(blank=True, null=True)
+    prix : float  = models.FloatField(blank=True, null=True)
+    surface : float  = models.FloatField(blank=True, null=True)
+    url : str  = models.TextField(blank=True)
+    phones : list = models.TextField(blank=True, null=True)
+    data : dict = models.TextField(blank=True, null=True)
     scrapper : str = models.CharField(max_length=255)
+    creation_date = models.DateTimeField()
 
 
     class Meta:
@@ -27,7 +30,7 @@ class Annonce(models.Model):
 
 
     @classmethod
-    def _prepare(cls, data):
+    def _prepare_dict(cls, data):
         data = {k:v for k,v in data.items()}
         data["site_id"]=data["id"]
         data["id"]=data["scrapper"]+":"+data["id"]
@@ -39,11 +42,12 @@ class Annonce(models.Model):
 
     @classmethod
     def _create(cls, data):
-        return cls(**cls._prepare(data))
+        return cls(**cls._prepare_dict(data))
 
     @classmethod
     def create(cls, data):
-        return cls.objects.create(**cls._prepare(data))
+        data["creation_date"]=datetime.datetime.now()
+        return cls.objects.create(**cls._prepare_dict(data))
 
     @classmethod
     def exists(cls, data):
