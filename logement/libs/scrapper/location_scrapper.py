@@ -1,0 +1,312 @@
+import re
+import time
+
+import requests
+from pyquery import PyQuery as pq
+
+class BadDomainException(Exception):
+    pass
+
+
+class UnhandledDomainException(Exception): pass
+
+
+
+
+
+class Connection:
+    _DOMAINS={}
+    _ACTIVE = {}
+    DOMAIN=""
+
+    MAX_CONNECTION_TIME = 3600
+    def __init__(self):
+        self.start=time.time()
+        self.kwargs={"headers":{'User-Agent': 'Mozilla'}}
+        pass
+
+    def handle(self, method, url, *args, **kwargs):
+        method = method.lower()
+        kwargs = {**kwargs, **self.kwargs}
+        return getattr(requests, method)(url, *args, **kwargs)
+
+    def init(self, url):
+        pass
+
+    @classmethod
+    def register(cls):
+        cls._DOMAINS[cls.DOMAIN]=cls
+
+
+    def _pq(self, url):
+        x = self.handle("get", url)
+        print(x.text)
+        return pq(x.content.decode("utf8"))
+
+    @classmethod
+    def pq(cls, url):
+        domain =url.split("/")[2]
+        if domain not in cls._DOMAINS:
+            domain=""
+
+        if domain in cls._ACTIVE:
+            obj = cls._ACTIVE[domain]
+            if time.time()-obj.start_time<obj.MAX_CONNECTION_TIME:
+                return obj._pq(url)
+
+        obj = cls._DOMAINS.get(domain, cls())()
+        cls._ACTIVE[domain]=obj
+        obj.init(url)
+        return obj._pq(url)
+
+
+
+class BaseScrapper:
+    NUMBER_REGEX=re.compile(r"(?P<number>\d+((\.|,)\d*)?)")
+    REGEX_PHONE = re.compile("\d\d.?\d\d.?\d\d.?\d\d.?\d\d")
+
+    _SCRAPPERS=[]
+    DOMAIN=None
+
+    @classmethod
+    def register(cls):
+        if cls.DOMAIN is None:
+            raise ValueError("Le domain n'est pas défini")
+        ThumbnailScrapper._SCRAPPERS.append(cls)
+
+    @classmethod
+    def get_scrapper(cls, url, wanted_class, **kwargs):
+            for classe in BaseScrapper._SCRAPPERS:
+                if url.lower().startswith((f"https://{classe.DOMAIN}/", f"https://{classe.DOMAIN}/")) and issubclass(classe, wanted_class):
+                    return classe
+            return None
+
+
+    def scrap(cls, **kwargs):
+        raise NotImplementedError()
+
+
+    def parseNumber(self, x):
+        if x is None: return None
+        if isinstance(x, (int,float)): return x
+        val = re.findall(self.NUMBER_REGEX, x)
+        for t in val:
+            if len(t):
+                c = t[0].replace(",",".")
+                return float(c) if "." in c else int(c)
+        return None
+
+
+
+    def _call_auto(self, name, default=None):
+        att = hasattr(self, f"QUERY_{name}") and getattr(self, f"QUERY_{name}")
+        if att:
+            if isinstance(att, AutoData):
+                return att.get_value(self.data)
+            if hasattr(self, att.FUNCTION):
+                x =  getattr(self, att.FUNCTION)(att.data, *att.params, fct=att.cast)
+                return x
+        return default
+
+
+    def find_phone(self, data):
+
+        ret = re.findall(self.REGEX_PHONE, data)
+        return ret
+
+class Auto:
+    FUNCTION=None
+    def __init__(self, d, *params, cast=None):
+        self.data = d
+        self.params = params
+        self.cast = cast
+
+
+class AutoText(Auto):
+    FUNCTION="_text"
+
+
+class AutoAttr(Auto):
+    FUNCTION="_attr"
+
+
+class AutoData(Auto):
+    FUNCTION="_data"
+
+    def __init__(self, *params, cast=None):
+        super().__init__(None, *params, cast)
+
+    def get_value(self, x):
+        curr = x
+        for key in self.params:
+            if key is None: continue
+            if isinstance(key, int) and isinstance(curr, list):
+                if key>=len(curr): return None
+                curr=curr[key]
+            elif isinstance(curr, dict):
+                if key not in curr: return None
+                curr=curr[key]
+            else:
+                return None
+        return curr
+
+class ElementScrapper(BaseScrapper):
+
+    def __init__(self, url=None, content=None, parent=None):
+        self.parent = parent
+        self.d = pq(url=url) if url else content
+        self.glob = self.parent.d if self.parent else self.d
+
+    def _text(self, query, fct=None, root=None):
+        root = root or "d"
+        if not hasattr(self, root): return None
+        x = getattr(self, root)(query)
+        if x: return x.text() if fct is None else fct(x.text())
+        return None
+
+    def _attr(self, query, attr, fct=None, root=None):
+        root = root or "d"
+        if not hasattr(self, root): return None
+        for x in getattr(self, root)(query):
+            val = x.attrib.get(attr)
+            if val is None: return None
+            return fct(val) if fct else val
+
+class LocationElemScrapper(ElementScrapper):
+    QUERY_PRIX = None
+    QUERY_CONTENT = None
+    QUERY_ID = None
+    QUERY_ADDRESS = None
+    QUERY_SURFACE = None
+    QUERY_TITLE = None
+    QUERY_PHONES = None
+    QUERY_IMGS = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.data = self.init()
+        self.id = self.get_id()
+        self.title = self.get_title()
+        self.content = self.get_content()
+        self.address = self.get_address()
+        self.imgs = self.get_imgs()
+        self.prix = self.parseNumber(self.get_prix())
+        self.surface = self.parseNumber(self.get_surface())
+        self.phones = self.get_phones()
+
+
+
+    def get_id(self):
+        x = self._call_auto("ID")
+        if x: return x
+        raise NotImplementedError()
+
+    def get_title(self):
+        return self._call_auto("TITLE")
+
+    def get_address(self):
+        return self._call_auto("ADDRESS")
+
+    def get_content(self):
+        return self._call_auto("CONTENT")
+
+    def get_imgs(self):
+        return self._call_auto("IMGS", [])
+
+    def get_surface(self):
+        return self._call_auto("SURFACE")
+
+    def get_prix(self):
+        return self._call_auto("PRIX")
+
+    def get_phones(self):
+        return self._call_auto("PHONES", [])
+
+    def __call__(self, *args, **kwargs):
+        return self.d.find(*args, **kwargs)
+
+    def init(self):
+        return self
+
+
+    def as_dict(self):
+        fields = [
+            "prix", "phones", "surface", "imgs", "content", "title", "id", "address", "url",
+
+        ]
+        x=  {k: getattr(self, k) for k in fields}
+        x["scrapper"] = str(self.__class__.__name__)
+        return x
+
+
+class PageScrapper(LocationElemScrapper):
+    def __init__(self, url):
+        super().__init__(url=url)
+
+
+    @property
+    def visited(self):
+        return True
+
+class ThumbnailScrapper(LocationElemScrapper):
+    DOMAIN=None
+    def __init__(self, d, parent):
+        super().__init__(content=d, parent=parent)
+        self.url = self.get_url()
+
+    def get_url(self):
+        return self._call_auto("URL")
+
+    def visit(self):
+        url = self.url
+        if url is None:
+            raise ValueError("Impossible de récupérer l'url de la page")
+        x = self.get_scrapper(url, PageScrapper)
+        return x(url=url)
+
+
+
+    @property
+    def visited(self):
+        return False
+
+
+class ListScrapper(BaseScrapper):
+    DOMAIN=None
+    def __init__(self, url):
+        self.url = url
+        if not re.match(rf"https(s)?://{self.DOMAIN}/.*", self.url):
+            raise BadDomainException(self.DOMAIN, url)
+        self.d = pq(url=self.url)
+        self.data=[]
+        self.parse()
+
+    def find_elements(self):
+        raise NotImplementedError()
+
+    def find_thubmnail_class(self):
+        x = self.get_scrapper(self.url, wanted_class=ThumbnailScrapper)
+        if x is None:
+            UnhandledDomainException(f"No scrapper fot thubnail to domain '{self.url}'")
+        return x
+
+
+    def parse(self):
+        data = self.find_elements()
+        classe = self.find_thubmnail_class()
+        if classe is None:
+            raise UnhandledDomainException(f"Aucune classe pour scrapper les miniatures de l'url '{self.url}'")
+        for x in data:
+            self.data.append(classe(pq(x), self))
+
+
+    def __call__(self, *args, **kwargs):
+        return self.d(*args, **kwargs)
+
+
+    @classmethod
+    def scrap(cls, url):
+        classe = cls.get_scrapper(url, ListScrapper)
+        if classe is None:
+            raise UnhandledDomainException(f"Aucune classe pour scrapper l'url '{url}'")
+        return classe(url)
