@@ -110,7 +110,6 @@ class BaseScrapper:
 
 
     def find_phone(self, data):
-
         ret = re.findall(self.REGEX_PHONE, data)
         return ret
 
@@ -171,6 +170,10 @@ class ElementScrapper(BaseScrapper):
             val = x.attrib.get(attr)
             if val is None: return None
             return fct(val) if fct else val
+
+    def clean_text(self, text):
+        if isinstance(text, str):
+            return text.rstrip(" \n\t").lstrip(" \n\t")
 
 class LocationElemScrapper(ElementScrapper):
     QUERY_PRIX = None
