@@ -125,6 +125,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 LOOKUP_URLS={
-    "https://www.leboncoin.fr/recherche?category=10&locations=Rennes_35000__48.10804_-1.68449_6849&price=min-950&rooms=3-4&square=55-max",
+    "https://www.blot-immobilier.fr/habitat/location/appartement--appartement-neuf/ille-et-vilaine/rennes/?t3=true&t4=true",
     "https://www.ouestfrance-immo.com/louer/appartement--3-pieces_4-pieces/?lieux=100003,100013&prix=0_950"
 }

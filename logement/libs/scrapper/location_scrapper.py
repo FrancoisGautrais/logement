@@ -237,7 +237,7 @@ class LocationElemScrapper(ElementScrapper):
             "prix", "phones", "surface", "imgs", "content", "title", "id", "address", "url",
 
         ]
-        x=  {k: getattr(self, k) for k in fields}
+        x=  {k: getattr(self, k) for k in fields if hasattr(self, k)}
         x["scrapper"] = str(self.__class__.__name__)
         return x
 
