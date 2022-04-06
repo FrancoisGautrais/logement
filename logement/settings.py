@@ -130,6 +130,17 @@ LOOKUP_URLS={
 "https://www.giboire.com/recherche-location/appartement/?address%5B%5D=RENNES&priceMin=500&priceMax=950&livingSurfaceMin=55&livingSurfaceMax=90&nbBedrooms%5B%5D=2&nbBedrooms%5B%5D=3&searchBy=undefined#both",
 }
 
+CRITERES = {
+    "loyer.min" : 550,
+    "loyer.max" : 950,
+    "surface.min" : 55,
+    "surface.max" : 90,
+    "words.include" : (Path(__file__).parent / "include").read_text(),
+    "words.exclude" : (Path(__file__).parent / "exclude").read_text(),
+}
+
+
+
 STATIC_URL = '/static/'
 
 DATA_PATH = BASE_DIR / "data"

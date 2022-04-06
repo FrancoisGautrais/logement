@@ -276,11 +276,13 @@ class ThumbnailScrapper(LocationElemScrapper):
 
 class ListScrapper(BaseScrapper):
     DOMAIN=None
+    READ_FCT=pq
+    CAST=pq
     def __init__(self, url):
         self.url = url
         if not re.match(rf"https(s)?://{self.DOMAIN}/.*", self.url):
             raise BadDomainException(self.DOMAIN, url)
-        self.d = pq(url=self.url)
+        self.d = self.READ_FCT(url=self.url)
         self.data=[]
         self.parse()
 
@@ -300,7 +302,7 @@ class ListScrapper(BaseScrapper):
         if classe is None:
             raise UnhandledDomainException(f"Aucune classe pour scrapper les miniatures de l'url '{self.url}'")
         for x in data:
-            self.data.append(classe(pq(x), self))
+            self.data.append(classe(self.CAST(x), self))
 
 
     def __call__(self, *args, **kwargs):
