@@ -3,7 +3,7 @@ import json
 
 
 from django.db import models
-from logement.libs.scrapper import blot, ouest_france
+from logement.libs.scrapper import blot, ouest_france, giboire
 
 
 # Create your models here.

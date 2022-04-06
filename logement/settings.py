@@ -126,5 +126,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOOKUP_URLS={
     "https://www.blot-immobilier.fr/habitat/location/appartement--appartement-neuf/ille-et-vilaine/rennes/?t3=true&t4=true",
-    "https://www.ouestfrance-immo.com/louer/appartement--3-pieces_4-pieces/?lieux=100003,100013&prix=0_950"
+    "https://www.ouestfrance-immo.com/louer/appartement--3-pieces_4-pieces/?lieux=100003,100013&prix=0_950",
+"https://www.giboire.com/recherche-location/appartement/?address%5B%5D=RENNES&priceMin=500&priceMax=950&livingSurfaceMin=55&livingSurfaceMax=90&nbBedrooms%5B%5D=2&nbBedrooms%5B%5D=3&searchBy=undefined#both",
 }
+
+STATIC_URL = '/static/'
+
+DATA_PATH = BASE_DIR / "data"
+
+if not DATA_PATH.is_dir():
+    DATA_PATH.mkdir(parents=True)
+
+CACHE_PATH = DATA_PATH / "cache"
+
+
+if not CACHE_PATH.is_dir():
+    CACHE_PATH.mkdir(parents=True)
+
+PASSWORD = None
+
+PASSWORD_FILE = DATA_PATH / "pasword"
+if not PASSWORD_FILE.is_file():
+    PASSWORD_FILE.touch()
+
+PASSWORD = PASSWORD_FILE.read_text().split("\n")[0]
+if not len(PASSWORD):
+    print(f"Merci de rensigner le mot de passe dans {PASSWORD_FILE.resolve()}")
+    exit(0)
