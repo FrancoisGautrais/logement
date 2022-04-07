@@ -114,7 +114,6 @@ def fb_messaging(req : HttpRequest):
     return HttpResponse(content=x.read_bytes(), content_type="text/javascript")
 
 def token(req : HttpRequest):
-    print(req.GET)
     return HttpResponse()
 
 def send(req : HttpRequest):

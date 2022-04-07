@@ -5,8 +5,6 @@ import json
 from django.db import models
 
 
-
-
 # Create your models here.
 from logement.libs import score
 
@@ -65,9 +63,11 @@ class Annonce(models.Model):
         except cls.DoesNotExist:
             pass
 
-        if len(data.title.split(" "))>5 and len(cls.objects.filter(title=data.title)):
-            return True
+        if data.address and data.prix and data.surface and len(cls.objects.filter(prix=data.prix, address=data.address, surface=data.surface)):
+                return True
 
+        if data.title and len(data.title.split(" "))>5 and len(cls.objects.filter(title=data.title)):
+            return True
         return False
 
 

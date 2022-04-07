@@ -135,6 +135,7 @@ LOOKUP_URLS=[
     "https://www.giboire.com/recherche-location/appartement/?address%5B%5D=RENNES&priceMin=500&priceMax=950&livingSurfaceMin=55&livingSurfaceMax=90&nbBedrooms%5B%5D=2&nbBedrooms%5B%5D=3&searchBy=undefined#both",
     "https://www.pigeaultimmobilier.com/location/?sous-categorie%5B%5D=1455&agences%5B%5D=26548&prix_min=500&prix_max=950&submitted=1&o=date-desc&action=load_search_results&wia_6_type=location&searchOnMap=0&wia_1_reference=",
     "https://www.bienici.com/realEstateAds.json?filters=%7B%22size%22%3A24%2C%22from%22%3A0%2C%22showAllModels%22%3Afalse%2C%22filterType%22%3A%22rent%22%2C%22propertyType%22%3A%5B%22flat%22%5D%2C%22minPrice%22%3A600%2C%22maxPrice%22%3A950%2C%22minRooms%22%3A3%2C%22maxRooms%22%3A4%2C%22minArea%22%3A55%2C%22maxArea%22%3A90%2C%22page%22%3A1%2C%22sortBy%22%3A%22relevance%22%2C%22sortOrder%22%3A%22desc%22%2C%22onTheMarket%22%3A%5Btrue%5D%2C%22zoneIdsByTypes%22%3A%7B%22zoneIds%22%3A%5B%22-54517%22%5D%7D%7D&extensionType=extendedIfNoResult",
+    "https://www.cabinet-martin.fr/location/appartement/rennes/3-pieces--4-pieces/600-euros-minimum/950-euros-maximum",
 ]
 
 CRITERES = {
@@ -161,7 +162,7 @@ if not CACHE_PATH.is_dir():
 
 PASSWORD = None
 
-PASSWORD_FILE = DATA_PATH / "pasword"
+PASSWORD_FILE = DATA_PATH / "password"
 if not PASSWORD_FILE.is_file():
     PASSWORD_FILE.touch()
 
