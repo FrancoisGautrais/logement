@@ -73,7 +73,7 @@ export { subscribe };
 /* eslint-env browser, es6 */
 
 'use strict';
-
+/*
 const applicationServerPublicKey = 'AAAANbXX6eU:APA91bESfJafSJ0rHH9c4-FXexHK8Gold4mArFmxuuaMcO1EcufmtIx1r9hbKVxkWcs4_JTPBjoyvVRCcrKG1iIUTGpMqgJZ4n1rFr3FyAgGvnI10sUBPND9ZrpmOHedXdTSmkrZzjTL';
 
 const pushButton = document.querySelector('.js-push-btn');
@@ -212,4 +212,40 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
 } else {
   console.warn('Push messaging is not supported');
   pushButton.textContent = 'Push Not Supported';
-}
+}*/
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
+import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.3/firebase-messaging.js';
+
+// TODO: Replace the following with your app's Firebase project configuration
+// See: https://firebase.google.com/docs/web/learn-more#config-object
+const firebaseConfig = {
+    apiKey: "AIzaSyAap-Z8-VkpcdbbTnRT3cPIZm9KtrJUdYM",
+    authDomain: "notif-3e564.firebaseapp.com",
+    projectId: "notif-3e564",
+    storageBucket: "notif-3e564.appspot.com",
+    messagingSenderId: "230684092901",
+    appId: "1:230684092901:web:c8093c4b4996e5cac9670c"
+
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+
+// Initialize Firebase Cloud Messaging and get a reference to the service
+const messaging = getMessaging(app);
+
+getToken({ vapidKey: 'BNCGiu1tHl6CpIN4x7WUVVaHsTBoxn2L9DJorIe09Nn_St2uN8Eik9XPFqN3p_dV4wLYs2491I1oUn1AgiKyOVw' }).then((currentToken) => {
+  if (currentToken) {
+    // Send the token to your server and update the UI if necessary
+    // ...
+  } else {
+    // Show permission request UI
+    console.log('No registration token available. Request permission to generate one.');
+    // ...
+  }
+}).catch((err) => {
+  console.log('An error occurred while retrieving token. ', err);
+  // ...
+});
