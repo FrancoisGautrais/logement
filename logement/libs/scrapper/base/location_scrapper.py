@@ -2,7 +2,9 @@ import re
 import time
 
 import requests
-from pyquery import PyQuery as pq
+
+from logement.libs.scrapper.base.connector import HtmlConnector
+
 
 class BadDomainException(Exception):
     pass
@@ -12,61 +14,16 @@ class UnhandledDomainException(Exception): pass
 
 
 
-
-
-class Connection:
-    _DOMAINS={}
-    _ACTIVE = {}
-    DOMAIN=""
-
-    MAX_CONNECTION_TIME = 3600
-    def __init__(self):
-        self.start=time.time()
-        self.kwargs={"headers":{'User-Agent': 'Mozilla'}}
-        pass
-
-    def handle(self, method, url, *args, **kwargs):
-        method = method.lower()
-        kwargs = {**kwargs, **self.kwargs}
-        return getattr(requests, method)(url, *args, **kwargs)
-
-    def init(self, url):
-        pass
-
-    @classmethod
-    def register(cls):
-        cls._DOMAINS[cls.DOMAIN]=cls
-
-
-    def _pq(self, url):
-        x = self.handle("get", url)
-        print(x.text)
-        return pq(x.content.decode("utf8"))
-
-    @classmethod
-    def pq(cls, url):
-        domain =url.split("/")[2]
-        if domain not in cls._DOMAINS:
-            domain=""
-
-        if domain in cls._ACTIVE:
-            obj = cls._ACTIVE[domain]
-            if time.time()-obj.start_time<obj.MAX_CONNECTION_TIME:
-                return obj._pq(url)
-
-        obj = cls._DOMAINS.get(domain, cls())()
-        cls._ACTIVE[domain]=obj
-        obj.init(url)
-        return obj._pq(url)
-
-
-
 class BaseScrapper:
     NUMBER_REGEX=re.compile(r"(?P<number>\d+((\.|,)\d*)?)")
     REGEX_PHONE = re.compile("\d\d.?\d\d.?\d\d.?\d\d.?\d\d")
+    CONNECTOR=HtmlConnector
 
     _SCRAPPERS=[]
     DOMAIN=None
+
+    def __init__(self):
+        self.connector=self.CONNECTOR()
 
     @classmethod
     def register(cls):
@@ -152,8 +109,9 @@ class AutoData(Auto):
 class ElementScrapper(BaseScrapper):
 
     def __init__(self, url=None, content=None, parent=None):
+        super().__init__()
         self.parent = parent
-        self.d = pq(url=url) if url else content
+        self.d = self.connector.from_url(url) if url else content
         self.glob = self.parent.d if self.parent else self.d
 
     def _text(self, query, fct=None, root=None):
@@ -238,14 +196,13 @@ class LocationElemScrapper(ElementScrapper):
 
         ]
         x=  {k: getattr(self, k) for k in fields if hasattr(self, k)}
-        x["scrapper"] = str(self.__class__.__name__)
+        x["domain"] = self.DOMAIN
         return x
 
 
 class PageScrapper(LocationElemScrapper):
     def __init__(self, url):
         super().__init__(url=url)
-
 
     @property
     def visited(self):
@@ -267,8 +224,6 @@ class ThumbnailScrapper(LocationElemScrapper):
         x = self.get_scrapper(url, PageScrapper)
         return x(url=url)
 
-
-
     @property
     def visited(self):
         return False
@@ -276,13 +231,13 @@ class ThumbnailScrapper(LocationElemScrapper):
 
 class ListScrapper(BaseScrapper):
     DOMAIN=None
-    READ_FCT=pq
-    CAST=pq
     def __init__(self, url):
+        super().__init__()
         self.url = url
+        self.connector = self.CONNECTOR()
         if not re.match(rf"https(s)?://{self.DOMAIN}/.*", self.url):
             raise BadDomainException(self.DOMAIN, url)
-        self.d = self.READ_FCT(url=self.url)
+        self.d = self.connector.from_url(self.url)
         self.data=[]
         self.parse()
 
@@ -302,7 +257,7 @@ class ListScrapper(BaseScrapper):
         if classe is None:
             raise UnhandledDomainException(f"Aucune classe pour scrapper les miniatures de l'url '{self.url}'")
         for x in data:
-            self.data.append(classe(self.CAST(x), self))
+            self.data.append(classe(self.connector.cast(x), self))
 
 
     def __call__(self, *args, **kwargs):
