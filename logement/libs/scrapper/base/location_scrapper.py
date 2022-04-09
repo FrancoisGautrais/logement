@@ -65,9 +65,9 @@ class BaseScrapper:
                 return x
         return default
 
-
-    def find_phone(self, data):
-        ret = re.findall(self.REGEX_PHONE, data)
+    @classmethod
+    def find_phone(cls, data):
+        ret = re.findall(cls.REGEX_PHONE, data)
         return ret
 
 class Auto:
@@ -111,7 +111,7 @@ class ElementScrapper(BaseScrapper):
     def __init__(self, url=None, content=None, parent=None):
         super().__init__()
         self.parent = parent
-        self.d = self.connector.from_url(url) if url else content
+        self.d = self.connector.from_request(url) if url else content
         self.glob = self.parent.d if self.parent else self.d
 
     def _text(self, query, fct=None, root=None):
@@ -237,7 +237,7 @@ class ListScrapper(BaseScrapper):
         self.connector = self.CONNECTOR()
         if not re.match(rf"https(s)?://{self.DOMAIN}/.*", self.url):
             raise BadDomainException(self.DOMAIN, url)
-        self.d = self.connector.from_url(self.url)
+        self.d = self.connector.from_request(self.url)
         self.data=[]
         self.parse()
 

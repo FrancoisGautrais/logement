@@ -26,7 +26,6 @@ class GiboireAnnonceScrapper(PageScrapper):
                 tds = tr.xpath("td")
                 if len(tds)>1:
                     ret[tds[0].text]=self.clean_text(tds[1].text)
-        print(ret)
         return ret
 
 

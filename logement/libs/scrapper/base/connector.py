@@ -1,14 +1,21 @@
 import json
 
-import requests
+
 from pyquery import PyQuery as pq
+
+from logement.libs.scrapper.base.request import Get
+
 
 class Connector:
 
     def __init__(self):
         self.url = None
 
-    def from_url(self, url):
+    # def from_url(self, url):
+    #     raise NotImplementedError()
+    #
+
+    def from_request(self, req):
         raise NotImplementedError()
 
     def cast(self, data):
@@ -18,8 +25,10 @@ class Connector:
 
 class HtmlConnector(Connector):
 
-    def from_url(self, url):
-        return pq(url=url)
+    def from_request(self, req):
+        if isinstance(req, str):
+            req = Get(req)
+        return req().pq
 
     def cast(self, data):
         return pq(data)
@@ -27,14 +36,10 @@ class HtmlConnector(Connector):
 
 class JsonConnector(Connector):
 
-    def from_url(self, url):
-        x = requests.get(url)
-        if x.status_code<400:
-            try:
-                return json.loads(x.content)
-            except:
-                pass
-        return None
+    def from_request(self, req):
+        if isinstance(req, str):
+            req = Get(req)
+        return req().json
 
     def cast(self, data):
         return data

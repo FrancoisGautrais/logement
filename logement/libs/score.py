@@ -74,7 +74,7 @@ def is_relevant(data):
     if not (CRIT.get("loyer.min", -1) <= loyer <= CRIT.get("loyer.max", 9999999)):
         return False
 
-    if not (CRIT.get("surface.min", -1) <= surface <= CRIT.get("surface.max", 9999999)):
+    if surface and not (CRIT.get("surface.min", -1) <= surface <= CRIT.get("surface.max", 9999999)):
         return False
 
     return True
