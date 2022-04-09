@@ -40,8 +40,7 @@ class GiboireAnnonceScrapper(PageScrapper):
         for x in self.d(".popin-slider_slide>img"):
             img = x.attrib.get('src')
             if img:
-                ret.append(f"https://www.Giboire-immobilier.fr/{img}")
-
+                ret.append(img)
         return ret
 
 class GiboireThubnailScrapper(ThumbnailScrapper):

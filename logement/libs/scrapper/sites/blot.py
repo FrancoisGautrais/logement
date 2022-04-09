@@ -27,7 +27,6 @@ class BlotAnnonceScrapper(PageScrapper):
                 tds = tr.xpath("td")
                 if len(tds)>1:
                     ret[tds[0].text]=self.clean_text(tds[1].text)
-        print(ret)
         return ret
 
     def get_prix(self):
@@ -56,7 +55,7 @@ class BlotAnnonceScrapper(PageScrapper):
         for x in self.d(".gallery>img"):
             img = x.attrib.get('src')
             if img:
-                ret.append(f"https://www.blot-immobilier.fr/{img}")
+                ret.append(img)
 
         return ret
 

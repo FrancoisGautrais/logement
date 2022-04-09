@@ -154,6 +154,16 @@ class LocationElemScrapper(ElementScrapper):
         self.prix = self.parseNumber(self.get_prix())
         self.surface = self.parseNumber(self.get_surface())
         self.phones = self.get_phones()
+        self.check_imgs()
+
+    def check_imgs(self):
+        out=[]
+        for url in self.imgs:
+            if url is None: continue
+            if url.startswith(("data:", "http:", 'https:',)):
+               out.append(url)
+            else:
+                out.append(f'https://{self.DOMAIN}{url}')
 
 
 

@@ -1,12 +1,85 @@
 {{ liste|length }} résultats relavant
 
 {% for elem in liste %}
-<div>
-    <h1>{{elem.title}}</h1>
-    <p>{{elem.content}}</p>
-    <ul>
-        <li>score: {{elem.score}}</li>
-        <li>relevant: {{elem.is_relevant}}</li>
-    </ul>
+<div class="element">
+    <div class="div-left">
+        <center>
+            <img src="{{elem.image}}"/>
+        </center>
+    </div>
+    <div class="div-right">
+        <small></small>
+        <h1>{{elem.title}}</h1>
+        <p>{{elem.content}}</p>
+        <table>
+            <tbody>
+
+                <tr>
+                    <td>Surface</td>
+                    <td>{{elem.surface}} m²</td>
+                </tr>
+                <tr>
+                    <td>Loyer</td>
+                    <td>{{elem.prix}} m²</td>
+                </tr>
+                <tr>
+                    <td>Age</td>
+                    <td>{{elem.age}}</td>
+                </tr>
+                <tr>
+                    <td>Score</td>
+                    <td>{{elem.score}}</td>
+                </tr>
+                <tr>
+                    <td>Site</td>
+                    <td>{{elem.domain}}</td>
+                </tr>
+                <tr>
+                    <td>Téléphone</td>
+                    <td>{{elem.phone}}</td>
+                </tr>
+                <tr>
+                    <td>Addresse / localisation</td>
+                    <td>{{elem.adresse}}</td>
+                </tr>
+                <tr>
+                    <td>Lien</td>
+                    <td><a href="{{elem.url}}">Lien</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endfor %}
+
+<style>
+.element{
+    display: flex;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.div-left{
+    width: 20%;
+    height: 100%;
+}
+
+
+.div-left > center {
+    vertical-align: middle;
+    display: inline;
+}
+
+.div-left > center > img{
+    max-height: 100%;
+    max-width: 100%;
+    vertical-align: middle;
+    display: inline;
+}
+
+.div-right{
+    padding-left: 5px;
+    width: 60%;
+}
+</style>

@@ -29,7 +29,7 @@ class PigeaultAnnonceScrapper(PageScrapper):
         for x in self.d("figure > a > img"):
             img = x.attrib.get('src')
             if img:
-                ret.append(f"https://www.Pigeault-immobilier.fr/{img}")
+                ret.append(img)
 
         return ret
 
