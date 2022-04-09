@@ -9,7 +9,7 @@ LOGFILE=logement.log
 PYTHON_MAIN=manage.py
 PYTHON=python3
 PORT=7093
-HOST=LOCALHOST
+HOST=localhost
 
 . $VENV/bin/activate
 
