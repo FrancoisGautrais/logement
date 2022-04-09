@@ -4,6 +4,9 @@ from pathlib import Path
 
 from django.conf import settings
 from unidecode import unidecode
+
+
+
 allowed_chars=f"abcdefghijklmnopqrstuvwxyz0123456789"
 rm_space = re.compile(r" +")
 
@@ -14,8 +17,9 @@ def uniform_data(x):
     x = "".join([c if c in allowed_chars else " " for c in x])
     return re.sub(rm_space, " ", x).split(" ")
 
-def parse_crtiere_file(file):
-    file = Path(file).read_text().split("\n")
+
+
+def parse_crtiere(file):
     tmp = [uniform_data(x) for x in file if x]
     ret = defaultdict(list)
     for words in tmp:
@@ -25,13 +29,33 @@ def parse_crtiere_file(file):
 
 
 
-INCLUDE = parse_crtiere_file(CRIT.get("words.include"))
-EXCLUDE = parse_crtiere_file(CRIT.get("words.exclude"))
+INCLUDE = None
+EXCLUDE = None
+
 
 def reload():
+    from portail.models import Filter
     global INCLUDE, EXCLUDE
-    INCLUDE = parse_crtiere_file(CRIT.get("words.include"))
-    EXCLUDE = parse_crtiere_file(CRIT.get("words.exclude"))
+    include_file = CRIT.get("words.include")
+    exclude_file = CRIT.get("words.exclude")
+
+
+
+    INCLUDE = parse_crtiere(Filter.include())
+    EXCLUDE = parse_crtiere(Filter.exclude())
+
+    if not len(INCLUDE) and include_file.is_file():
+        include = include_file.read_text()
+        if include:
+            Filter.load(include, "include")
+            INCLUDE = parse_crtiere(Filter.include())
+
+    if not len(EXCLUDE) and exclude_file.is_file():
+        exclude = exclude_file.read_text()
+        if exclude:
+            Filter.load(exclude, "exclude")
+            EXCLUDE = parse_crtiere(Filter.exclude())
+
 
 
 
@@ -54,8 +78,12 @@ def _score(content, crit):
         i+=1
     return ret
 
+def init():
+    if INCLUDE is None or EXCLUDE is None:
+        reload()
 
 def score(data):
+    init()
     if not isinstance(data, dict):
         fields = ["content", "address", "title"]
         tmp = data
@@ -70,6 +98,7 @@ def score(data):
 
 
 def score_debug(data):
+    init()
     if not isinstance(data, dict):
         fields = ["content", "address", "title"]
         tmp = data

@@ -1,6 +1,7 @@
 import datetime
 import json
 import time
+from pathlib import Path
 
 from django.db import models
 from django.utils import timezone
@@ -122,3 +123,36 @@ class Annonce(models.Model):
         return ", ".join(self._include)
 
 
+    def __repr__(self):
+        return f"{self.id}, {self.surface} m² {self.prix} € {self.domain} {self.address} {self.title}"
+
+    def __str__(self):
+        return self.__repr__()
+
+class Filter(models.Model):
+
+    value : str = models.TextField()
+    type : str = models.TextField()
+    score : int = models.IntegerField(default=1)
+
+
+    @classmethod
+    def load(cls, content, type):
+        data = content.split("\n")
+        for line in data:
+            cls.objects.create(value = line, type=type)
+
+
+    @classmethod
+    def exclude(cls):
+        return [x.value for x in cls.objects.filter(type="exclude")]
+
+    @classmethod
+    def include(cls):
+        return [x.value for x in cls.objects.filter(type="exclude")]
+
+    def __repr__(self):
+        return f"{self.value};{self.type};{self.score}"
+
+    def __str__(self):
+        return self.__repr__()

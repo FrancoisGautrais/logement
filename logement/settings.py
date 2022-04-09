@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import json
 import os
-
+import logement.startup
 
 from pathlib import Path
 
@@ -143,10 +144,13 @@ CRITERES = {
     "loyer.max" : 950,
     "surface.min" : 55,
     "surface.max" : 90,
-    "words.include" : (Path(__file__).parent / "include"),
-    "words.exclude" : (Path(__file__).parent / "exclude"),
+    "words.include" : (BASE_DIR / "conf" / "include"),
+    "words.exclude" : (BASE_DIR / "conf" / "exclude"),
 }
+EMAILS=[]
 
+for k, v in json.loads((BASE_DIR / "conf/conf.json").read_text()).items():
+    exec(f"{k} = {v}")
 
 
 DATA_PATH = BASE_DIR / "data"
@@ -160,11 +164,9 @@ CACHE_PATH = DATA_PATH / "cache"
 if not CACHE_PATH.is_dir():
     CACHE_PATH.mkdir(parents=True)
 
-PASSWORD = None
 
-PASSWORD_FILE = DATA_PATH / "password"
-if not PASSWORD_FILE.is_file():
-    PASSWORD_FILE.touch()
+PASSWORD_FILE = BASE_DIR / "conf/password"
+
 
 PASSWORD = PASSWORD_FILE.read_text().split("\n")[0]
 if not len(PASSWORD):
