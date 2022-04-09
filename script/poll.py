@@ -2,4 +2,5 @@
 
 import sys
 import requests
-requests.get(sys.argv[1])
+x = requests.get(sys.argv[1])
+print(x.content.decode())
