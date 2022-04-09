@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from pathlib import Path
 
 from django.conf import settings
@@ -16,9 +17,11 @@ def uniform_data(x):
 def parse_crtiere_file(file):
     file = Path(file).read_text().split("\n")
     tmp = [uniform_data(x) for x in file if x]
-    return {
-        x[0]: x[1:] for x in tmp
-    }
+    ret = defaultdict(list)
+    for words in tmp:
+        ret[words[0]].append(words[1:])
+
+    return ret
 
 
 
@@ -33,20 +36,21 @@ def reload():
 
 
 def _score(content, crit):
-    ret = 0
+    ret = []
     nb = len(content)
     i=0
     while i<nb:
         word=content[i]
         if word in crit and i+len(crit[word])<nb:
-            j=0
-            while j<len(crit[word]):
-                if content[i+j+1] != crit[word][j]:
-                    break
-                j+=1
-            else:
-                ret+=1
-                i+=j
+            for arr in crit[word]:
+                j=0
+                while j<len(arr):
+                    if content[i+j+1] != arr[j]:
+                        break
+                    j+=1
+                else:
+                    ret.append(" ".join([word] + arr))
+                    i+=j
         i+=1
     return ret
 
@@ -62,7 +66,24 @@ def score(data):
             data.get("title") or "",
     ])
     content = uniform_data(content)
-    return _score(content, INCLUDE) - _score(content, EXCLUDE)
+    return len(_score(content, INCLUDE)) - len(_score(content, EXCLUDE))
+
+
+def score_debug(data):
+    if not isinstance(data, dict):
+        fields = ["content", "address", "title"]
+        tmp = data
+        data = { k: getattr(tmp, k) for k in fields}
+    content = " ".join([
+            data.get("content") or "",
+            data.get("address") or "",
+            data.get("title") or "",
+    ])
+    content = uniform_data(content)
+    return _score(content, INCLUDE), _score(content, EXCLUDE)
+
+
+
 
 def is_relevant(data):
     if not isinstance(data, dict):

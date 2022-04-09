@@ -8,12 +8,13 @@ import pytz
 
 # Create your models here.
 from logement.libs import score
+from logement.libs.score import score_debug
 
 
 class Annonce(models.Model):
     objects : models.Manager
 
-    id : str  = models.TextField(primary_key=True)
+    custom_id : str  = models.TextField()
     site_id: str = models.TextField()
     title : str  = models.TextField()
     content : str  = models.TextField(blank=True, null=True)
@@ -28,6 +29,7 @@ class Annonce(models.Model):
     creation_date : datetime.datetime = models.DateTimeField()
     score : int = models.IntegerField(default=0)
     is_relevant : bool = models.BooleanField(default=False)
+    disable : bool  = models.BooleanField(default=False)
 
 
     class Meta:
@@ -37,8 +39,8 @@ class Annonce(models.Model):
     @classmethod
     def _prepare_dict(cls, data):
         data = {k:v for k,v in data.items()}
-        data["site_id"]=data["id"]
-        data["id"]=data["domain"]+":"+data["id"]
+        data["site_id"]=data["custom_id"]
+        data["custom_id"]=data["domain"]+":"+data["custom_id"]
         data["phones"]=json.dumps(data.get("phones"))
         data["imgs"]=json.dumps(data.get("imgs"))
         data["data"]=json.dumps(data.get("data"))
@@ -106,5 +108,17 @@ class Annonce(models.Model):
 
         return " ".join(out)
 
+
+    @property
+    def exclude(self):
+        if not hasattr(self, "_exclude"):
+            self._include, self._exclude = score_debug(self)
+        return ", ".join(self._exclude)
+
+    @property
+    def include(self):
+        if not hasattr(self, "_include"):
+            self._include, self._exclude = score_debug(self)
+        return ", ".join(self._include)
 
 

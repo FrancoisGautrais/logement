@@ -35,7 +35,7 @@ class OuestFranceThubnailScrapper(ThumbnailScrapper):
                 return  div.attrib.get("data-id")
 
     def get_phones(self):
-        x = self.glob(f"#contact_tel_div_{self.id}_1")
+        x = self.glob(f"#contact_tel_div_{self.custom_id}_1")
         phones = []
         for div in x:
             for ret in pq(div)(".num"):
@@ -71,7 +71,7 @@ class OuestFranceAnnonceScrapper(PageScrapper):
 
 
     def get_phones(self):
-        x = self.glob(f"#contact_tel_div_{self.id}_1")
+        x = self.glob(f"#contact_tel_div_{self.custom_id}_1")
         phones = []
         for div in x:
             for ret in pq(div)(".num"):

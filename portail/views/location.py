@@ -4,11 +4,12 @@ import tempfile
 from pathlib import Path
 from zipfile import ZipFile
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification
 
+from logement.libs.notifyer.notify import notify
 from portail.models import Annonce
 from logement.libs import scrapper, score
 from django.conf import settings
@@ -27,7 +28,8 @@ def poll(req : HttpRequest):
                 if not Annonce.exists(complete_js):
                     obj = Annonce.create(complete_js)
                     news.append(obj)
-
+    if news:
+        notify(req, news)
     return HttpResponse(len(news))
 
 
@@ -38,11 +40,20 @@ def page_list(req : HttpRequest):
     if rel is not None: rel = rel.lower() in ("true", "1")
     kwargs = {
         "is_relevant": True,
-        "score__gte" : param.get("score", 0)
+        "score__gte" : param.get("score", 0),
+        "disable" : False
     }
 
     data = {
         "liste" : list(Annonce.objects.filter(**kwargs).order_by("-creation_date"))
+    }
+    return render(req, "element.html",  data)
+
+def page_list_all(req : HttpRequest):
+
+    param = req.GET or {}
+    data = {
+        "liste" : list(Annonce.objects.all().order_by("-creation_date"))
     }
     return render(req, "element.html",  data)
 
@@ -128,5 +139,22 @@ def send(req : HttpRequest):
     device.send_message(msg)
     return HttpResponse()
 
+def disable(req : HttpRequest, id : int):
+    elem = Annonce.objects.get(id=id)
+    elem.disable=True
+    elem.save()
+    return HttpResponseRedirect("/")
 
 
+def enable(req : HttpRequest, id : int):
+    elem = Annonce.objects.get(id=id)
+    elem.disable=False
+    elem.save()
+    return HttpResponseRedirect("/")
+
+def show_annonce(req : HttpRequest, id : int):
+    elem = Annonce.objects.get(id=id)
+    data = {
+        "elem" : elem
+    }
+    return render(req, "page.html",  data)

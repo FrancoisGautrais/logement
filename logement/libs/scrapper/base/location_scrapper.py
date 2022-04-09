@@ -146,7 +146,7 @@ class LocationElemScrapper(ElementScrapper):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data = self.init()
-        self.id = self.get_id()
+        self.custom_id = self.get_id()
         self.title = self.get_title()
         self.content = self.get_content()
         self.address = self.get_address()
@@ -202,7 +202,7 @@ class LocationElemScrapper(ElementScrapper):
 
     def as_dict(self):
         fields = [
-            "prix", "phones", "surface", "imgs", "content", "title", "id", "address", "url",
+            "prix", "phones", "surface", "imgs", "content", "title", "custom_id", "address", "url",
 
         ]
         x=  {k: getattr(self, k) for k in fields if hasattr(self, k)}

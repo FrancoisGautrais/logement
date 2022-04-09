@@ -1,6 +1,4 @@
-{{ liste|length }} résultats relavant
 
-{% for elem in liste %}
 <div class="element">
     <div class="div-left">
         <center>
@@ -9,7 +7,7 @@
     </div>
     <div class="div-right">
         <small></small>
-        <h1><a href="/annonce/{{elem.id}}">{{elem.title}}</a></h1>
+        <h1><a href="{{elem.url}}">{{elem.title}}</a></h1>
         <p>{{elem.content}}</p>
         <table>
             <tbody>
@@ -59,10 +57,31 @@
                         {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td>Mot inclus</td>
+                    <td>{{elem.include}}</td>
+                </tr>
+                <tr>
+                    <td>Mot exclus</td>
+                    <td>{{elem.exclude}}</td>
+                </tr>
+                <tr>
+                    <td>Pertinent</td>
+                    <td>
+                        {% if elem.is_relevant %}
+                            Oui
+                        {% else %}
+                            Non
+                        {% endif %}
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+{% for img in elem.images %}
+     <img src="{{img}}"/>
 {% endfor %}
 
 <style>

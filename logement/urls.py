@@ -15,13 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from portail.views.location import poll, page_list, update_score, page, libs, fb_messaging, token, send
+from portail.views.location import poll, page_list, update_score, page, libs, fb_messaging, token, send, enable, \
+    disable, page_list_all, show_annonce
 from portail.views.static import find_static_files
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("poll", poll),
     path("", page_list),
+    path("tous", page_list_all),
+    path("annonce/disable/<int:id>", disable),
+    path("annonce/enable/<int:id>", enable),
+    path("annonce/<int:id>", show_annonce),
     path("update", update_score),
     path("test", page),
     path("firebase-messaging-sw.js", fb_messaging),

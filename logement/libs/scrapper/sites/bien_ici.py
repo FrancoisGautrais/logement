@@ -19,7 +19,7 @@ class BienIciThubnailScrapper(ThumbnailScrapper):
     QUERY_SURFACE = AutoData('surfaceArea')
 
     def get_url(self):
-        return f"https://{self.DOMAIN}/annonce/location/{self._city}/{self._nb_pieces}pieces/{self.id}"
+        return f"https://{self.DOMAIN}/annonce/location/{self._city}/{self._nb_pieces}pieces/{self.custom_id}"
 
     def visit(self):
         return self
