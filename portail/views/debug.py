@@ -18,6 +18,13 @@ def mail(req : HttpRequest):
     return HttpResponse("ok")
 
 
+
+def push(req : HttpRequest):
+    notify(req, list(Annonce.objects.all())[:-5])
+    return HttpResponse("ok")
+
+
 urls = [
     path("mail", mail),
+    path("push", push),
 ]

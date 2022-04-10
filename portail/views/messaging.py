@@ -1,31 +1,36 @@
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.urls import path
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Notification, Message
 
+from logement.libs.notifyer import push
 
-def fb_messaging(req : HttpRequest):
-    x = settings.BASE_DIR / "www" / "_firebase-messaging-sw.js"
-    return HttpResponse(content=x.read_bytes(), content_type="text/javascript")
 
-def token(req : HttpRequest):
+
+def token(req : HttpRequest, token : str):
+    x = len(FCMDevice.objects.filter(registration_id=token))
+    if not x:
+        FCMDevice.objects.create(
+            device_id=token,
+            registration_id=token,
+            type = "android",
+        )
     return HttpResponse()
 
 def send(req : HttpRequest):
-    device = FCMDevice.objects.create(
-        device_id='fasUbzsOBwBeK8f142WNiu:APA91bFMJgB5QPNwlOygU97Sz90tbfMFobCGy-aiaebc7EY1CA_JJp3JLooRkiDrVrZ9PAP-zJyCIXl5hb28cpttNrRZv1UheHPMzairNj_BxOM54nM457tg2OK-jBjUgJlcQZnOUbfU',
-        registration_id='fasUbzsOBwBeK8f142WNiu:APA91bFMJgB5QPNwlOygU97Sz90tbfMFobCGy-aiaebc7EY1CA_JJp3JLooRkiDrVrZ9PAP-zJyCIXl5hb28cpttNrRZv1UheHPMzairNj_BxOM54nM457tg2OK-jBjUgJlcQZnOUbfU',
-        type = "android",
-    )
-    msg = Message(
-        notification=Notification(title="title", body="text", image="url")
-    )
-    device.send_message(msg)
+    push.send_notif_to_all("Tets", "Ça marche")
     return HttpResponse()
 
+
+def subscribe_page(req : HttpRequest):
+    return render(req, "subscribe.html",  {})
+
+
+
 urls = [
-    path("firebase-messaging-sw.js", fb_messaging),
-    path("token", token),
+    path("subscribe", subscribe_page),
+    path("subscribe/<str:token>", token),
     path("send", send),
 ]

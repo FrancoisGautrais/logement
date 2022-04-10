@@ -1,3 +1,4 @@
+'use strict';
 /*
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
@@ -232,20 +233,24 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+function subscribe(){
+    // Initialize Firebase Cloud Messaging and get a reference to the service
+    const messaging = getMessaging();
+    getToken(messaging, { vapidKey: 'BNCGiu1tHl6CpIN4x7WUVVaHsTBoxn2L9DJorIe09Nn_St2uN8Eik9XPFqN3p_dV4wLYs2491I1oUn1AgiKyOVw' }).then((currentToken) => {
+      if (currentToken) {
+        // Send the token to your server and update the UI if necessary
+        // ...
+        console.log("token", currentToken)
+        $.get("/subscribe/"+currentToken)
+      } else {
+        // Show permission request UI
+        console.log('No registration token available. Request permission to generate one.');
+        // ...
+      }
+    }).catch((err) => {
+      console.log('An error occurred while retrieving token. ', err);
+      // ...
+    });
+}
 
-// Initialize Firebase Cloud Messaging and get a reference to the service
-const messaging = getMessaging(app);
-
-getToken({ vapidKey: 'BNCGiu1tHl6CpIN4x7WUVVaHsTBoxn2L9DJorIe09Nn_St2uN8Eik9XPFqN3p_dV4wLYs2491I1oUn1AgiKyOVw' }).then((currentToken) => {
-  if (currentToken) {
-    // Send the token to your server and update the UI if necessary
-    // ...
-  } else {
-    // Show permission request UI
-    console.log('No registration token available. Request permission to generate one.');
-    // ...
-  }
-}).catch((err) => {
-  console.log('An error occurred while retrieving token. ', err);
-  // ...
-});
+window.subscribe=subscribe;

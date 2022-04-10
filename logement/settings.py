@@ -20,7 +20,7 @@ from firebase_admin import initialize_app
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=str(BASE_DIR/"key.json")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=str(BASE_DIR/ "conf" /"key.json")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

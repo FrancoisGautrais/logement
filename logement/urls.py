@@ -24,5 +24,5 @@ urlpatterns = [
     path("", include(annonce.urls)),
     path("", include(html.urls)),
     path("debug/", include(debug.urls)),
-    path("messaging", include(messaging.urls)),
+    path("", include(messaging.urls)),
 ] +  find_static_files()

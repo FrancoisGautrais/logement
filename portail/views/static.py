@@ -8,7 +8,8 @@ def _serv(file):
             ".js" : "text/javascript",
             ".css" : "text/css",
             ".html" : "text/html",
-            ".png": "image/png"
+            ".png": "image/png",
+            ".jpg": "image/jpg",
         }[file.suffix])
     return _do_serv
 

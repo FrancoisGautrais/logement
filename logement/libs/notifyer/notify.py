@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.conf import settings
 
+from logement.libs.notifyer import push
 from logement.libs.notifyer.mail import send_mail, send_auto_email
 
 MAIL_TEMPLATE="""
@@ -20,5 +21,8 @@ def mail_notify(nb):
         return send_auto_email(mail, f"{nb} nouveaux logemnts disponibles", get_mail(nb))
 
 def notify(req : HttpRequest, annocnes):
-    mail_notify(len(annocnes))
+    nb = len(annocnes)
+    mail_notify(nb)
+    push.send_notif_to_all(f"Nouveaux logments", f"{nb} nouvelles annonces disponible !")
+
 

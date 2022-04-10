@@ -16,8 +16,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Retrieve firebase messaging
-const messaging = firebase.messaging();
 
+const messaging = firebase.messaging();
+/*
 messaging.onBackgroundMessage(function(payload) {
   console.log('Received background message ', payload);
 
@@ -26,8 +27,8 @@ messaging.onBackgroundMessage(function(payload) {
     body: payload.notification.body,
   };
 
-  self.registration.showNotification(notificationTitle,
-    notificationOptions);
+//  self.registration.showNotification(notificationTitle,
+//    notificationOptions);
 });
 
 self.addEventListener('push', function(event) {
@@ -42,4 +43,4 @@ self.addEventListener('push', function(event) {
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
-});
+});*/

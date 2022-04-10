@@ -20,12 +20,9 @@
 /* eslint-env browser, serviceworker, es6 */
 
 'use strict';
-
-/* eslint-disable max-len */
-
+/*
 const applicationServerPublicKey = 'BNCGiu1tHl6CpIN4x7WUVVaHsTBoxn2L9DJorIe09Nn_St2uN8Eik9XPFqN3p_dV4wLYs2491I1oUn1AgiKyOVw';
 
-/* eslint-enable max-len */
 
 function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -80,3 +77,22 @@ self.addEventListener('pushsubscriptionchange', function(event) {
     })
   );
 });
+
+
+/*
+function initializeUI() {
+  // Set the initial subscription value
+  swRegistration.pushManager.getSubscription()
+  .then(function(subscription) {
+    isSubscribed = !(subscription === null);
+
+    if (isSubscribed) {
+      console.log('User IS subscribed.');
+    } else {
+      console.log('User is NOT subscribed.');
+    }
+
+    updateBtn();
+  });
+}
+*/

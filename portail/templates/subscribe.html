@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+textarea{
+  width: 500px;
+  height: 200px;
+}
+</style>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<h1>Notification push</h1>
+<h2>S'inscrire</h2>
+<button onclick="subscribe()">S'inscrire</button>
+
+
+<h2>Envoyer une notification push</h2>
+<button onclick="$.get('/send')">Envoyer</button>
+
+
+<script type="module" src="/lib.js"></script>
+
+</body>
+</html>
