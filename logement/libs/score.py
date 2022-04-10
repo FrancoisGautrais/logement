@@ -56,7 +56,7 @@ def reload():
             Filter.load(exclude, "exclude")
             EXCLUDE = parse_crtiere(Filter.exclude())
 
-
+    return None
 
 
 def _score(content, crit):

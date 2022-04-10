@@ -149,7 +149,7 @@ class Filter(models.Model):
 
     @classmethod
     def include(cls):
-        return [x.value for x in cls.objects.filter(type="exclude")]
+        return [x.value for x in cls.objects.filter(type="include")]
 
     def __repr__(self):
         return f"{self.value};{self.type};{self.score}"
