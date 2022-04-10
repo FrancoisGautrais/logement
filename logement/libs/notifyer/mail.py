@@ -1,22 +1,23 @@
 # from website.models.settings import settings
 import smtplib, ssl
-settings={}
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from django.conf import settings
+
 
 def send_mail(sender, reciever, message, opts=None):
     opts = opts or {}
-    smtp = opts.get("smtp", settings.get("mail.smtp"))
+    smtp = opts.get("smtp")
     _tmp = smtp.split(":")
     smtp_host = _tmp[0]
     smtp_port = int(_tmp[1])
 
 
-    user = opts.get("username", settings.get("mail.username"))
-    email = opts.get("email", settings.get("mail.email"))
-    password = opts.get("password",settings.get("mail.password"))
+    user = opts.get("username")
+    email = opts.get("email")
+    password = opts.get("password")
     headers = opts.get("headers", {})
 
     context = ssl.create_default_context()
@@ -32,15 +33,11 @@ def send_mail(sender, reciever, message, opts=None):
         msg.attach(part1)
         server.sendmail(sender, reciever, msg.as_string().encode('ascii'))
 
-def send_auto_email(name, addr, message, opts=None):
-    content=f"""Message auto de {name} ({addr}).
-=======================================
-{message}
-=======================================
-"""
-    dest = opts.get("email", settings.get("mail.email"))
+
+def send_auto_email(dest, title, message, opts=None):
+    opts = opts or settings.SMTP
     if not "headers" in opts: opts["headers"]={}
-    opts["headers"]["Subject"]=f"Nouveau message de {name}"
-    opts["headers"]["From"]=addr
+    opts["headers"]["Subject"]=title
+    opts["headers"]["From"]=opts.get("email")
     opts["headers"]["To"]=dest
-    send_mail(dest, dest, content, opts)
+    send_mail(dest, dest, message, opts)

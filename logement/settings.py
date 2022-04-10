@@ -146,11 +146,14 @@ CRITERES = {
     "surface.max" : 90,
     "words.include" : (BASE_DIR / "conf" / "include"),
     "words.exclude" : (BASE_DIR / "conf" / "exclude"),
+    "score.min" : 0
 }
 EMAILS=[]
 
+DOMAIN = "logement.gautrais.eu"
+
 for k, v in json.loads((BASE_DIR / "conf/conf.json").read_text()).items():
-    exec(f"{k} = {v}")
+    exec(f"{k} = {json.dumps(v)}")
 
 
 DATA_PATH = BASE_DIR / "data"
