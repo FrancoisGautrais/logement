@@ -102,7 +102,7 @@ class Annonce(models.Model):
         d = seconds // (3600*24)
         if d:
             out.append(f"{int(d)} jours")
-        h  = seconds // 3600
+        h  = (seconds % (3600*24)) // 3600
         m  = (seconds // 3600) % 60
         out.append(f"{str(int(h)).zfill(2)} h")
         out.append(f"{str(int(m)).zfill(2)} m")
