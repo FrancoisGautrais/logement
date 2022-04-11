@@ -22,7 +22,6 @@ class Connector:
         raise NotImplementedError()
 
 
-
 class HtmlConnector(Connector):
 
     def from_request(self, req):

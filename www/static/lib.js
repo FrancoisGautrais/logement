@@ -238,18 +238,20 @@ function subscribe(){
     const messaging = getMessaging();
     getToken(messaging, { vapidKey: 'BNCGiu1tHl6CpIN4x7WUVVaHsTBoxn2L9DJorIe09Nn_St2uN8Eik9XPFqN3p_dV4wLYs2491I1oUn1AgiKyOVw' }).then((currentToken) => {
       if (currentToken) {
-        // Send the token to your server and update the UI if necessary
-        // ...
         console.log("token", currentToken)
-        $.get("/subscribe/"+currentToken)
+        $.ajax({
+            url: "/subscribe/"+currentToken,
+            success: function(){ alert("Inscription confirmée")}
+        });
       } else {
         // Show permission request UI
         console.log('No registration token available. Request permission to generate one.');
+        alert("Impossible de s'inscrire : Impossible de récupérer le jeton d'authentification")
         // ...
       }
     }).catch((err) => {
       console.log('An error occurred while retrieving token. ', err);
-      // ...
+       alert("Impossible de s'inscrire : "+err)
     });
 }
 

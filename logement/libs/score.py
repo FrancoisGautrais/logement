@@ -1,4 +1,5 @@
 import re
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -59,6 +60,16 @@ def reload():
     return None
 
 
+def set_filtres(include, exclude):
+    from portail.models import Filter
+    global INCLUDE, EXCLUDE
+    Filter.objects.all().delete()
+    Filter.load(include, "include")
+    Filter.load(exclude, "exclude")
+    INCLUDE = parse_crtiere(Filter.include())
+    EXCLUDE = parse_crtiere(Filter.exclude())
+
+
 def _score(content, crit):
     ret = []
     nb = len(content)
@@ -68,7 +79,7 @@ def _score(content, crit):
         if word in crit and i+len(crit[word])<nb:
             for arr in crit[word]:
                 j=0
-                while j<len(arr):
+                while j<len(arr) and i+j+1<nb:
                     if content[i+j+1] != arr[j]:
                         break
                     j+=1
@@ -128,8 +139,4 @@ def is_relevant(data):
         return False
 
     return True
-
-
-
-
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Filtres</title>
+</head>
+<body>
+
+<h1>Filtres</h1>
+<p>Insérer les mots clé à inclure et exclure. Chaque ligne est un ensemble de mot clé qui seront recherchés ensemble</p>
+<form method="POST">
+    <div class="pane-root">
+        <div class="pane pane-left">
+            <h2>A inclure</h2>
+            <textarea name="include">{{include}}</textarea>
+        </div>
+        <div class="pane pane-right">
+            <h2>A exclure</h2>
+            <textarea name="exclude">{{exclude}}</textarea>
+        </div>
+    </div>
+    <button type="submit" name="validate">Valider</button>
+    <button type="submit" name="validate_and_reload">Valider et recharger</button>
+</form>
+
+<style>
+.pane {
+    width: 50%;
+}
+
+textarea {
+    width: 95%;
+    min-height: 400px;
+}
+
+.pane-left {
+}
+
+.pane-right {
+
+}
+.pane-root {
+    width: 100%;
+    display: flex;
+    margin-bottom: 10px;
+}
+
+
+</style>
+</body>
+</html>

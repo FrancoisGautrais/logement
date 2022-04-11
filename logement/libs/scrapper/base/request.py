@@ -1,25 +1,47 @@
 import json
+from pathlib import Path
+
 from pyquery import PyQuery as pq
 import requests
 
+def pretty_print_POST(req):
+    """
+    At this point it is completely built and ready
+    to be fired; it is "prepared".
 
+    However pay attention at the formatting used in
+    this function because it is programmed to be pretty
+    printed and may differ from the actual request.
+    """
+    print('{}\n{}\r\n{}\r\n\r\n{}'.format(
+        '-----------START-----------',
+        req.method + ' ' + req.url,
+        '\r\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+        req.body,
+    ))
 class Request:
 
     def __init__(self, method, url, data=None, headers=None, **kwargs):
         self.method = method
         self.url = url
         self.data = data
-        self.headers = headers
+        self.headers = headers or {}
         self.kwargs = kwargs
         self.response = None
 
 
     def __call__(self, *args, **kwargs):
+        kwargs.update(self.kwargs)
         if self.data:
             kwargs["data"]=self.data
         if self.headers:
             kwargs["headers"]=self.headers
-        self.response =  requests.request(self.method.upper(), self.url, **kwargs)
+        if kwargs.get("headers", {}).get("User-Agent") is None:
+            kwargs["headers"] = kwargs.get("headers", {})
+            kwargs["headers"]["User-Agent"]="Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0"
+
+        self.response = requests.request(self.method.upper(), self.url,  **kwargs)
+
         return self
 
     @property

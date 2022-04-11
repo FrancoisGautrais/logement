@@ -138,9 +138,7 @@ class Filter(models.Model):
 
     @classmethod
     def load(cls, content, type):
-        data = content.split("\n")
-        for line in data:
-            cls.objects.create(value = line, type=type)
+        [cls.objects.create(value = line, type=type) for line in content.split("\n")]
 
 
     @classmethod
@@ -156,3 +154,35 @@ class Filter(models.Model):
 
     def __str__(self):
         return self.__repr__()
+
+
+class Options(models.Model):
+    key : str = models.TextField(unique=True)
+    value : str = models.TextField()
+
+
+    @property
+    def data(self):
+        return json.loads(self.value)
+
+    def set_value(self, data):
+        self.value = json.dumps(data)
+        self.save()
+        return data
+
+    @classmethod
+    def get(cls, key):
+        try:
+            return cls.objects.get(key=key)
+        except cls.DoesNotExist :
+            return None
+
+    @classmethod
+    def set(cls, key, value):
+        try:
+            return cls.objects.get(key=key).set_value(value)
+        except cls.DoesNotExist :
+            cls.objects.create(key=key, value=json.dumps(value))
+            return value
+
+

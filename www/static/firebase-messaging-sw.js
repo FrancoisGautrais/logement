@@ -18,8 +18,8 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve firebase messaging
 
 const messaging = firebase.messaging();
-/*
-messaging.onBackgroundMessage(function(payload) {
+
+messaging.onMessage(function(payload) {
   console.log('Received background message ', payload);
 
   const notificationTitle = payload.notification.title;
@@ -27,10 +27,10 @@ messaging.onBackgroundMessage(function(payload) {
     body: payload.notification.body,
   };
 
-//  self.registration.showNotification(notificationTitle,
-//    notificationOptions);
+  self.registration.showNotification(notificationTitle,
+    notificationOptions);
 });
-
+/*
 self.addEventListener('push', function(event) {
   console.log('[Service Worker] Push Received.');
   console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);

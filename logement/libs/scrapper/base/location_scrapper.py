@@ -3,7 +3,9 @@ import time
 
 import requests
 
+
 from logement.libs.scrapper.base.connector import HtmlConnector
+from logement.libs.scrapper.base.request import Get
 
 
 class BadDomainException(Exception):
@@ -12,6 +14,18 @@ class BadDomainException(Exception):
 
 class UnhandledDomainException(Exception): pass
 
+class ScrapRuntimeException(Exception):
+    def __init__(self, exc, scrapper):
+        self.exception=exc
+        self.content=exception_to_string(exc)
+        self.scrapper=str(scrapper)
+        super().__init__(type(exc).__name__,exc)
+
+import traceback
+def exception_to_string(excp):
+   stack = traceback.extract_stack()[:-3] + traceback.extract_tb(excp.__traceback__)  # add limit=??
+   pretty = traceback.format_list(stack)
+   return ''.join(pretty) + '\n  {} {}'.format(excp.__class__,excp)
 
 
 class BaseScrapper:
@@ -32,9 +46,13 @@ class BaseScrapper:
         ThumbnailScrapper._SCRAPPERS.append(cls)
 
     @classmethod
-    def get_scrapper(cls, url, wanted_class, **kwargs):
+    def get_scrapper(cls, req, wanted_class, **kwargs):
+            if isinstance(req, str):
+                url=req
+            else:
+                url=req.url
             for classe in BaseScrapper._SCRAPPERS:
-                if url.lower().startswith((f"https://{classe.DOMAIN}/", f"https://{classe.DOMAIN}/")) and issubclass(classe, wanted_class):
+                if url.lower().startswith((f"https://{classe.DOMAIN}/", f"http://{classe.DOMAIN}/")) and issubclass(classe, wanted_class):
                     return classe
             return None
 
@@ -81,7 +99,6 @@ class Auto:
 class AutoText(Auto):
     FUNCTION="_text"
 
-
 class AutoAttr(Auto):
     FUNCTION="_attr"
 
@@ -90,7 +107,7 @@ class AutoData(Auto):
     FUNCTION="_data"
 
     def __init__(self, *params, cast=None):
-        super().__init__(None, *params, cast)
+        super().__init__(None, *params, cast=cast)
 
     def get_value(self, x):
         curr = x
@@ -104,7 +121,14 @@ class AutoData(Auto):
                 curr=curr[key]
             else:
                 return None
-        return curr
+        return curr if self.cast is None else self.cast(curr)
+
+class AutoConst(AutoData):
+    FUNCTION="_const"
+
+    def get_value(self, x):
+        return self.params[0]
+
 
 class ElementScrapper(BaseScrapper):
 
@@ -212,6 +236,7 @@ class LocationElemScrapper(ElementScrapper):
 
 class PageScrapper(LocationElemScrapper):
     def __init__(self, url):
+        self.url=url
         super().__init__(url=url)
 
     @property
@@ -228,11 +253,14 @@ class ThumbnailScrapper(LocationElemScrapper):
         return self._call_auto("URL")
 
     def visit(self):
-        url = self.url
-        if url is None:
-            raise ValueError("Impossible de récupérer l'url de la page")
-        x = self.get_scrapper(url, PageScrapper)
-        return x(url=url)
+        try:
+            url = self.url
+            if url is None:
+                raise ValueError("Impossible de récupérer l'url de la page")
+            x = self.get_scrapper(url, PageScrapper)
+            return x(url=url)
+        except Exception as err:
+            raise ScrapRuntimeException(err, self.__class__)
 
     @property
     def visited(self):
@@ -241,13 +269,16 @@ class ThumbnailScrapper(LocationElemScrapper):
 
 class ListScrapper(BaseScrapper):
     DOMAIN=None
-    def __init__(self, url):
+    def __init__(self, request):
         super().__init__()
-        self.url = url
+        if isinstance(request, str):
+            request=Get(request)
+        self.request = request
+        self.url = request.url
         self.connector = self.CONNECTOR()
-        if not re.match(rf"https(s)?://{self.DOMAIN}/.*", self.url):
-            raise BadDomainException(self.DOMAIN, url)
-        self.d = self.connector.from_request(self.url)
+        if not re.match(rf"http(s)?://{self.DOMAIN}/.*", self.url):
+            raise BadDomainException(self.DOMAIN, self.url)
+        self.d = self.connector.from_request(self.request)
         self.data=[]
         self.parse()
 
@@ -276,7 +307,10 @@ class ListScrapper(BaseScrapper):
 
     @classmethod
     def scrap(cls, url):
-        classe = cls.get_scrapper(url, ListScrapper)
-        if classe is None:
-            raise UnhandledDomainException(f"Aucune classe pour scrapper l'url '{url}'")
-        return classe(url)
+        try:
+            classe = cls.get_scrapper(url, ListScrapper)
+            if classe is None:
+                raise UnhandledDomainException(f"Aucune classe pour scrapper l'url '{url}'")
+            return classe(url)
+        except Exception as err:
+            raise ScrapRuntimeException(err, cls)
