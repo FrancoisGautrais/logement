@@ -35,3 +35,19 @@ LOOKUP_URLS = [
     "https://www.bienici.com/realEstateAds.json?filters=%7B%22size%22%3A24%2C%22from%22%3A0%2C%22showAllModels%22%3Afalse%2C%22filterType%22%3A%22rent%22%2C%22propertyType%22%3A%5B%22flat%22%5D%2C%22minPrice%22%3A600%2C%22maxPrice%22%3A950%2C%22minRooms%22%3A3%2C%22maxRooms%22%3A4%2C%22minArea%22%3A55%2C%22maxArea%22%3A90%2C%22page%22%3A1%2C%22sortBy%22%3A%22relevance%22%2C%22sortOrder%22%3A%22desc%22%2C%22onTheMarket%22%3A%5Btrue%5D%2C%22zoneIdsByTypes%22%3A%7B%22zoneIds%22%3A%5B%22-54517%22%5D%7D%7D&extensionType=extendedIfNoResult",
     "https://www.cabinet-martin.fr/location/appartement/rennes/3-pieces--4-pieces/600-euros-minimum/950-euros-maximum",
 ]
+
+if __name__=="__main__":
+    from logement.libs.scrapper import scrap
+    for url in LOOKUP_URLS:
+        x = scrap(url)
+        for v in x.elements:
+            d = v.visit()
+            print(f"ID = {d.custom_id}")
+            print(f"title = {d.title}")
+            print(f"content = {d.content}")
+            print(f"imgs = {d.imgs}")
+            print(f"prix = {d.prix}")
+            print(f"phone = {d.phones}")
+            print(f"surface = {d.surface}")
+            print(f"address = {d.address}")
+            print("\n\n")
