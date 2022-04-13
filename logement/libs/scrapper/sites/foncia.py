@@ -22,7 +22,7 @@ class FonciaAnnonceScrapper(PageScrapper):
     QUERY_ID = HelperJson("reference")
     QUERY_PRIX = HelperJson("loyer")
     QUERY_CONTENT = HelperJson("description")
-    QUERY_ADDRESS = HelperJson("localisation", "adresse")+HelperJson("localisation", "ville")
+    QUERY_ADDRESS = HelperJson("localisation", "adresse")+" "+HelperJson("localisation", "ville")
     QUERY_IMGS = HelperJson("medias")
     QUERY_PHONES = HelperConst(["02 99 79 41 14"])
     QUERY_SURFACE = HelperJson("surface", "carrez")
