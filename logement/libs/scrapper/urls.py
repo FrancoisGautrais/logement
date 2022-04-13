@@ -6,6 +6,9 @@ from logement.libs.scrapper.sites.square_habitat import SquarePost
 LOOKUP_URLS = [
     "https://www.century21.fr/annonces/f/location-appartement/cpv-35000_rennes/s-55-90/st-0-/b-0-950/p-3-4/",
     "http://www.dany-richard-immo.com/location/",
+    Post("https://fnc-api.prod.fonciatech.net/annonces/annonces/search",
+                '{"type":"location","filters":{"typesBien":["appartement"],"surface":{"min":50,"max":100},"prix":{"min":450,"max":950},"map":{"geoBox":{"bottomRight":{"lon":-1.6571526791896154,"lat":48.09568415298487},"topLeft":{"lon":-1.7309089969658011,"lat":48.124558715078734}},"zoom":14}},"expandNearby":true,"size":15}',
+                headers={"Content-Type": "application/json"}),
     SquarePost("https://www.squarehabitat.fr/", {
         "ctl00$menuheader$txtSearchD": "",
         "ctl00$menuheader$txtSearchM": "",
