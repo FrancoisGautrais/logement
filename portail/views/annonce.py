@@ -61,7 +61,7 @@ def poll(req : HttpRequest):
             write_exception(exc)
             continue
 
-        for thubnail in scrapped.data:
+        for thubnail in scrapped.elements:
             current = thubnail.__class__
             try:
                 js = thubnail.as_dict()

@@ -4,8 +4,8 @@ import re
 import requests
 from pyquery import PyQuery as pq
 
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, PageScrapper, \
-    AutoData
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, PageScrapper, \
+    HelperJson
 
 DOMAIN="www.guenno.com"
 url = "https://www.guenno.com/biens/recherche?realty_type[]=1&mandate_type=2&number_room[]=3&min_surface=&town=RENNES&price_max=950"
@@ -14,12 +14,12 @@ url = "https://www.guenno.com/biens/recherche?realty_type[]=1&mandate_type=2&num
 
 class GuennoAnnonceScrapper(PageScrapper):
     DOMAIN=DOMAIN
-    QUERY_ID = AutoData("id", cast=str)
-    QUERY_TITLE = AutoText("#realty_area")
-    QUERY_CONTENT = AutoData("description")
-    QUERY_ADDRESS = AutoText("#realty_area")
-    QUERY_IMGS = AutoData("pictures")
-    QUERY_SURFACE = AutoData("surface")
+    QUERY_ID = HelperJson("id", cast=str)
+    QUERY_TITLE = HelperHtmlText("#realty_area")
+    QUERY_CONTENT = HelperJson("description")
+    QUERY_ADDRESS = HelperHtmlText("#realty_area")
+    QUERY_IMGS = HelperJson("pictures")
+    QUERY_SURFACE = HelperJson("surface")
     REG = re.compile(r"(?P<surface>\d+) ?m²")
 
 
@@ -38,9 +38,9 @@ class GuennoAnnonceScrapper(PageScrapper):
 
 class GuennoThubnailScrapper(ThumbnailScrapper):
     DOMAIN=DOMAIN
-    QUERY_ID = AutoAttr("article", "id")
-    QUERY_PRIX = AutoText(".realty_price")
-    QUERY_URL = AutoAttr(".link-block", "href", cast=lambda x: f"{x}")
+    QUERY_ID = HelperHtmlAttr("article", "id")
+    QUERY_PRIX = HelperHtmlText(".realty_price")
+    QUERY_URL = HelperHtmlAttr(".link-block", "href", cast=lambda x: f"{x}")
 
 class GuennoScrapper(ListScrapper):
     DOMAIN=DOMAIN
@@ -49,13 +49,10 @@ class GuennoScrapper(ListScrapper):
         return [ x for x in self.d("article")]
 
 
-GuennoThubnailScrapper.register()
-GuennoAnnonceScrapper.register()
-GuennoScrapper.register()
-
 if __name__ == "__main__":
-    x = ListScrapper.scrap(url)
-    for d in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(url)
+    for d in x.elements:
         d = d.visit()
 
         print(f"ID = {d.custom_id}")

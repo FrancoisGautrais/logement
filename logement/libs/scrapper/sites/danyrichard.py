@@ -4,9 +4,9 @@ import re
 import requests
 from pyquery import PyQuery as pq
 
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, \
-    PageScrapper, \
-    AutoData, AutoConst
+from logement.libs.scrapper.base.helpers import HelperConst
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, \
+    PageScrapper, HelperJson
 
 DOMAIN="www.dany-richard-immo.com"
 url = "http://www.dany-richard-immo.com/location/"
@@ -15,13 +15,13 @@ url = "http://www.dany-richard-immo.com/location/"
 
 class DanyRichardAnnonceScrapper(PageScrapper):
     DOMAIN=DOMAIN
-    QUERY_TITLE = AutoText("h1")
-    QUERY_CONTENT = AutoText(".col-3-small-1")
-    QUERY_ADDRESS = AutoData("address")
-    QUERY_ID = AutoData("référence")
-    QUERY_PRIX = AutoData("prix")
-    QUERY_SURFACE = AutoData("surface")
-    QUERY_PHONES = AutoConst(["02 99 31 01 00"])
+    QUERY_TITLE = HelperHtmlText("h1")
+    QUERY_CONTENT = HelperHtmlText(".col-3-small-1")
+    QUERY_ADDRESS = HelperJson("address")
+    QUERY_ID = HelperJson("référence")
+    QUERY_PRIX = HelperJson("prix")
+    QUERY_SURFACE = HelperJson("surface")
+    QUERY_PHONES = HelperConst(["02 99 31 01 00"])
 
     def get_imgs(self):
         return [x.attrib.get("data-image-large") for x in self.d(".js-product--image__thumb")]
@@ -42,10 +42,10 @@ def do_id(x):
 
 class DanyRichardThubnailScrapper(ThumbnailScrapper):
     DOMAIN=DOMAIN
-    QUERY_TITLE =  AutoText(".txtright")
-    QUERY_ID = AutoText(".txtright", cast=lambda x: do_id)
-    QUERY_PRIX = AutoText(".products-list--item__price")
-    QUERY_URL = AutoAttr("figure>a", "href", cast=lambda x: f"http://{DOMAIN}{x}")
+    QUERY_TITLE =  HelperHtmlText(".txtright")
+    QUERY_ID = HelperHtmlText(".txtright", cast=lambda x: do_id)
+    QUERY_PRIX = HelperHtmlText(".products-list--item__price")
+    QUERY_URL = HelperHtmlAttr("figure>a", "href", cast=lambda x: f"http://{DOMAIN}{x}")
 
 
     def get_id(self):
@@ -59,13 +59,10 @@ class DanyRichardScrapper(ListScrapper):
         return [ x for x in self.d("article")]
 
 
-DanyRichardThubnailScrapper.register()
-DanyRichardAnnonceScrapper.register()
-DanyRichardScrapper.register()
-
 if __name__ == "__main__":
-    x = ListScrapper.scrap(url)
-    for d in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(url)
+    for d in x.elements:
         d = d.visit()
         print(f"ID = {d.custom_id}")
         print(f"url = {d.url}")

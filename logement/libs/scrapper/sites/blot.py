@@ -3,8 +3,8 @@ import json
 import requests
 from pyquery import PyQuery as pq
 
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, PageScrapper, \
-    AutoData
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, PageScrapper, \
+    HelperJson
 
 url = "https://www.blot-immobilier.fr/habitat/location/appartement--appartement-neuf/ille-et-vilaine/rennes/?t3=true&t4=true&page=1&tri=nouveaute"
 
@@ -12,13 +12,13 @@ url = "https://www.blot-immobilier.fr/habitat/location/appartement--appartement-
 
 class BlotAnnonceScrapper(PageScrapper):
     DOMAIN="www.blot-immobilier.fr"
-    QUERY_TITLE = AutoText("h1")
-    QUERY_CONTENT = AutoText("#descriptif")
-    QUERY_ADDRESS = AutoText(".adresse")
-    QUERY_ID = AutoText("small")
-    QUERY_IMGS = AutoAttr(".gallery>img", "src", cast=lambda x : [x])
-    QUERY_PRIX = AutoText(".prix>strong")
-    QUERY_SURFACE = AutoData("Surface habitable")
+    QUERY_TITLE = HelperHtmlText("h1")
+    QUERY_CONTENT = HelperHtmlText("#descriptif")
+    QUERY_ADDRESS = HelperJson("Secteur")
+    QUERY_ID = HelperHtmlText("small")
+    QUERY_IMGS = HelperHtmlAttr(".gallery>img", "src", cast=lambda x : [x])
+    QUERY_PRIX = HelperHtmlText(".prix>strong")
+    QUERY_SURFACE = HelperJson("Surface habitable")
 
 
     def init(self):
@@ -43,7 +43,7 @@ class BlotAnnonceScrapper(PageScrapper):
 
 
     def get_phones(self):
-        tel = self._attr(".btn_tel", "data-tel")
+        tel = self.d(".btn_tel").attr("data-tel")
         if not tel: return None
         tel = tel.split("'")
         if len(tel) == 3:
@@ -61,10 +61,10 @@ class BlotAnnonceScrapper(PageScrapper):
 
 class BlotThubnailScrapper(ThumbnailScrapper):
     DOMAIN="www.blot-immobilier.fr"
-    QUERY_TITLE =  AutoText(".ref")
-    QUERY_ID = AutoText(".ref")
-    QUERY_PRIX = AutoText(".prix>strong")
-    QUERY_URL = AutoAttr("a", "href", cast=lambda x: f"https://www.blot-immobilier.fr{x}")
+    QUERY_TITLE =  HelperHtmlText(".ref")
+    QUERY_ID = HelperHtmlText(".ref")
+    QUERY_PRIX = HelperHtmlText(".prix>strong")
+    QUERY_URL = HelperHtmlAttr("a", "href", cast=lambda x: f"https://www.blot-immobilier.fr{x}")
 
 
 
@@ -75,15 +75,12 @@ class BlotScrapper(ListScrapper):
         return [ x for x in self.d(".search_results > .container > .bloc_annonce")]
 
 
-BlotThubnailScrapper.register()
-BlotAnnonceScrapper.register()
-BlotScrapper.register()
-
 if __name__ == "__main__":
-    x = ListScrapper.scrap(url)
-    for v in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(url)
+    for v in x.elements:
         d = v.visit()
-        print(f"ID = {d.id}")
+        print(f"ID = {d.custom_id}")
         print(f"title = {d.title}")
         print(f"content = {d.content}")
         print(f"imgs = {d.imgs}")

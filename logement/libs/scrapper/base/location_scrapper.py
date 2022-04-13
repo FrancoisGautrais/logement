@@ -1,3 +1,4 @@
+import json
 import re
 import time
 
@@ -5,6 +6,7 @@ import requests
 
 
 from logement.libs.scrapper.base.connector import HtmlConnector
+from logement.libs.scrapper.base.helpers import BaseHelper, HelperHtmlText, HelperHtmlAttr, HelperJson
 from logement.libs.scrapper.base.request import Get
 
 
@@ -42,7 +44,7 @@ class BaseScrapper:
     @classmethod
     def register(cls):
         if cls.DOMAIN is None:
-            raise ValueError("Le domain n'est pas défini")
+            return
         ThumbnailScrapper._SCRAPPERS.append(cls)
 
     @classmethod
@@ -51,6 +53,7 @@ class BaseScrapper:
                 url=req
             else:
                 url=req.url
+
             for classe in BaseScrapper._SCRAPPERS:
                 if url.lower().startswith((f"https://{classe.DOMAIN}/", f"http://{classe.DOMAIN}/")) and issubclass(classe, wanted_class):
                     return classe
@@ -71,16 +74,11 @@ class BaseScrapper:
                 return float(c) if "." in c else int(c)
         return None
 
-
-
     def _call_auto(self, name, default=None):
         att = hasattr(self, f"QUERY_{name}") and getattr(self, f"QUERY_{name}")
         if att:
-            if isinstance(att, AutoData):
-                return att.get_value(self.data)
-            if hasattr(self, att.FUNCTION):
-                x =  getattr(self, att.FUNCTION)(att.data, *att.params, fct=att.cast)
-                return x
+            if isinstance(att, BaseHelper):
+                return att.get_value(self)
         return default
 
     @classmethod
@@ -88,76 +86,33 @@ class BaseScrapper:
         ret = re.findall(cls.REGEX_PHONE, data)
         return ret
 
-class Auto:
-    FUNCTION=None
-    def __init__(self, d, *params, cast=None):
-        self.data = d
-        self.params = params
-        self.cast = cast
+    @property
+    def response(self):
+        return self.request.response if hasattr(self, "request") and hasattr(self.request, "response") else None
 
+    @property
+    def response_text(self):
+        x = self.response
+        return x.text if x else None
 
-class AutoText(Auto):
-    FUNCTION="_text"
+    @property
+    def response_bytes(self):
+        x = self.response
+        return x.content if x else None
 
-class AutoAttr(Auto):
-    FUNCTION="_attr"
+    @property
+    def response_json(self):
+        x = self.response
+        return json.loads(x.content) if x else None
 
-
-class AutoData(Auto):
-    FUNCTION="_data"
-
-    def __init__(self, *params, cast=None):
-        super().__init__(None, *params, cast=cast)
-
-    def get_value(self, x):
-        curr = x
-        for key in self.params:
-            if key is None: continue
-            if isinstance(key, int) and isinstance(curr, list):
-                if key>=len(curr): return None
-                curr=curr[key]
-            elif isinstance(curr, dict):
-                if key not in curr: return None
-                curr=curr[key]
-            else:
-                return None
-        return curr if self.cast is None else self.cast(curr)
-
-class AutoConst(AutoData):
-    FUNCTION="_const"
-
-    def get_value(self, x):
-        return self.params[0]
-
-
-class ElementScrapper(BaseScrapper):
-
-    def __init__(self, url=None, content=None, parent=None):
-        super().__init__()
-        self.parent = parent
-        self.d = self.connector.from_request(url) if url else content
-        self.glob = self.parent.d if self.parent else self.d
-
-    def _text(self, query, fct=None, root=None):
-        root = root or "d"
-        if not hasattr(self, root): return None
-        x = getattr(self, root)(query)
-        if x: return x.text() if fct is None else fct(x.text())
-        return None
-
-    def _attr(self, query, attr, fct=None, root=None):
-        root = root or "d"
-        if not hasattr(self, root): return None
-        for x in getattr(self, root)(query):
-            val = x.attrib.get(attr)
-            if val is None: return None
-            return fct(val) if fct else val
 
     def clean_text(self, text):
         if isinstance(text, str):
             return text.rstrip(" \n\t").lstrip(" \n\t")
 
-class LocationElemScrapper(ElementScrapper):
+
+
+class LocationElemScrapper(BaseScrapper):
     QUERY_PRIX = None
     QUERY_CONTENT = None
     QUERY_ID = None
@@ -167,8 +122,11 @@ class LocationElemScrapper(ElementScrapper):
     QUERY_PHONES = None
     QUERY_IMGS = None
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, url=None, content=None, parent=None, **kwargs):
+        super().__init__()
+        self.parent = parent
+        self.d = self.connector.from_request(url) if url else content
+        self.glob = self.parent.d if self.parent else self.d
         self.data = self.init()
         self.custom_id = self.get_id()
         self.title = self.get_title()
@@ -188,8 +146,7 @@ class LocationElemScrapper(ElementScrapper):
                out.append(url)
             else:
                 out.append(f'https://{self.DOMAIN}{url}')
-
-
+        self.imgs=out
 
     def get_id(self):
         x = self._call_auto("ID")
@@ -235,9 +192,9 @@ class LocationElemScrapper(ElementScrapper):
 
 
 class PageScrapper(LocationElemScrapper):
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         self.url=url
-        super().__init__(url=url)
+        super().__init__(url=url, **kwargs)
 
     @property
     def visited(self):
@@ -258,7 +215,7 @@ class ThumbnailScrapper(LocationElemScrapper):
             if url is None:
                 raise ValueError("Impossible de récupérer l'url de la page")
             x = self.get_scrapper(url, PageScrapper)
-            return x(url=url)
+            return x(url=url, parent=self)
         except Exception as err:
             raise ScrapRuntimeException(err, self.__class__)
 
@@ -266,9 +223,10 @@ class ThumbnailScrapper(LocationElemScrapper):
     def visited(self):
         return False
 
-
 class ListScrapper(BaseScrapper):
     DOMAIN=None
+    QUERY_ELEMENTS=None
+
     def __init__(self, request):
         super().__init__()
         if isinstance(request, str):
@@ -279,10 +237,12 @@ class ListScrapper(BaseScrapper):
         if not re.match(rf"http(s)?://{self.DOMAIN}/.*", self.url):
             raise BadDomainException(self.DOMAIN, self.url)
         self.d = self.connector.from_request(self.request)
-        self.data=[]
+        self.elements=[]
         self.parse()
 
     def find_elements(self):
+        if self.QUERY_ELEMENTS:
+            return self.QUERY_ELEMENTS.get_value(self)
         raise NotImplementedError()
 
     def find_thubmnail_class(self):
@@ -298,7 +258,7 @@ class ListScrapper(BaseScrapper):
         if classe is None:
             raise UnhandledDomainException(f"Aucune classe pour scrapper les miniatures de l'url '{self.url}'")
         for x in data:
-            self.data.append(classe(self.connector.cast(x), self))
+            self.elements.append(classe(self.connector.cast(x), self))
 
 
     def __call__(self, *args, **kwargs):

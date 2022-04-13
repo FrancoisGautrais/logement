@@ -5,8 +5,8 @@ import requests
 from pyquery import PyQuery as pq
 
 from logement.libs.scrapper.base.connector import Connector, HtmlConnector
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, PageScrapper, \
-    AutoData
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, PageScrapper, \
+    HelperJson
 from logement.libs.scrapper.base.request import Post, Get
 
 
@@ -83,11 +83,11 @@ class SquarePost(Post):
 
 class SquareHabitatAnnonceScrapper(PageScrapper):
     DOMAIN="www.squarehabitat.fr"
-    QUERY_TITLE = AutoData("name")
-    QUERY_CONTENT = AutoData("description")
-    QUERY_PRIX = AutoText("#cphContent_litPrix")
-    QUERY_PHONES = AutoData("telephone", cast=PageScrapper.find_phone)
-    QUERY_SURFACE = AutoData("floorSize")
+    QUERY_TITLE = HelperJson("name")
+    QUERY_CONTENT = HelperJson("description")
+    QUERY_PRIX = HelperHtmlText("#cphContent_litPrix")
+    QUERY_PHONES = HelperJson("telephone", cast=PageScrapper.find_phone)
+    QUERY_SURFACE = HelperJson("floorSize")
 
     def init(self):
         for x in self.d("script"):
@@ -102,15 +102,15 @@ class SquareHabitatAnnonceScrapper(PageScrapper):
         return [x.attrib.get("src") for x in self.d("li>img")]
 
 
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         self.custom_id = url[len("https://www.squarehabitat.fr"):]
-        super().__init__(url=url)
+        super().__init__(url=url, **kwargs)
 
 class SquareHabitatThubnailScrapper(ThumbnailScrapper):
     DOMAIN="www.squarehabitat.fr"
-    QUERY_ID = AutoAttr("a.photo-bien", "href")
-    QUERY_PRIX = AutoText(".prix")
-    QUERY_URL = AutoAttr("a.photo-bien", "href", cast=lambda x: f'https://www.squarehabitat.fr{x}')
+    QUERY_ID = HelperHtmlAttr("a.photo-bien", "href")
+    QUERY_PRIX = HelperHtmlText(".prix")
+    QUERY_URL = HelperHtmlAttr("a.photo-bien", "href", cast=lambda x: f'https://www.squarehabitat.fr{x}')
 
 
     def __init__(self, d, parent):
@@ -123,11 +123,6 @@ class SquareHabitatScrapper(ListScrapper):
 
     def find_elements(self):
         return [ x for x in self.d(".justify-content-left>.col-md-4")]
-
-
-SquareHabitatThubnailScrapper.register()
-SquareHabitatAnnonceScrapper.register()
-SquareHabitatScrapper.register()
 
 
 
@@ -154,9 +149,9 @@ post = SquarePost("https://www.squarehabitat.fr/", {
 })
 
 if __name__ == "__main__":
-    x = ListScrapper.scrap(post)
-    print(x.data)
-    for v in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(post)
+    for v in x.elements:
         d = v.visit()
         print(f"ID = {d.custom_id}")
         print(f"title = {d.title}")

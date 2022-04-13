@@ -4,8 +4,8 @@ import re
 import requests
 from pyquery import PyQuery as pq
 
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, PageScrapper, \
-    AutoData
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, PageScrapper, \
+    HelperJson
 
 DOMAIN=""
 url = "https://www.cabinet-XXXX.fr/location/appartement/rennes/3-pieces--4-pieces/600-euros-minimum/950-euros-maximum"
@@ -14,13 +14,13 @@ url = "https://www.cabinet-XXXX.fr/location/appartement/rennes/3-pieces--4-piece
 
 class XXXXAnnonceScrapper(PageScrapper):
     DOMAIN=DOMAIN
-    QUERY_TITLE = AutoText("h1")
-    QUERY_CONTENT = AutoText(".rendered-body > p")
-    QUERY_ADDRESS = AutoText("small")
-    QUERY_ID = AutoAttr("article", "id")
-    QUERY_IMGS = AutoAttr(".gallery>img", "src", cast=lambda x : [x])
-    QUERY_PRIX = AutoText("small")
-    QUERY_PHONES = AutoText(".conseiller", cast=PageScrapper.find_phone)
+    QUERY_TITLE = HelperHtmlText("h1")
+    QUERY_CONTENT = HelperHtmlText(".rendered-body > p")
+    QUERY_ADDRESS = HelperHtmlText("small")
+    QUERY_ID = HelperHtmlAttr("article", "id")
+    QUERY_IMGS = HelperHtmlAttr(".gallery>img", "src", cast=lambda x : [x])
+    QUERY_PRIX = HelperHtmlText("small")
+    QUERY_PHONES = HelperHtmlText(".conseiller", cast=PageScrapper.find_phone)
     REG = re.compile(r"(?P<surface>\d+) ?m²")
 
     def get_imgs(self):
@@ -32,10 +32,10 @@ class XXXXAnnonceScrapper(PageScrapper):
 
 class XXXXThubnailScrapper(ThumbnailScrapper):
     DOMAIN=DOMAIN
-    QUERY_TITLE =  AutoText("h2 > a")
-    QUERY_ID = AutoAttr("article", "id")
-    QUERY_PRIX = AutoText(".prix")
-    QUERY_URL = AutoAttr("h2 > a", "href", cast=lambda x: f"{DOMAIN}{x}")
+    QUERY_TITLE =  HelperHtmlText("h2 > a")
+    QUERY_ID = HelperHtmlAttr("article", "id")
+    QUERY_PRIX = HelperHtmlText(".prix")
+    QUERY_URL = HelperHtmlAttr("h2 > a", "href", cast=lambda x: f"{DOMAIN}{x}")
 
 class XXXXScrapper(ListScrapper):
     DOMAIN=DOMAIN
@@ -44,13 +44,11 @@ class XXXXScrapper(ListScrapper):
         return [ x for x in self.d(".list-item")]
 
 
-XXXXThubnailScrapper.register()
-XXXXAnnonceScrapper.register()
-XXXXScrapper.register()
 
 if __name__ == "__main__":
-    x = ListScrapper.scrap(url)
-    for v in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(url)
+    for v in x.elements:
         d = v.visit()
         print(f"ID = {d.custom_id}")
         print(f"url = {d.url}")

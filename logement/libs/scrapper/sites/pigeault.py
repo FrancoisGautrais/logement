@@ -3,8 +3,8 @@ import json
 import requests
 from pyquery import PyQuery as pq
 
-from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, AutoText, AutoAttr, PageScrapper, \
-    AutoData
+from logement.libs.scrapper.base.location_scrapper import ListScrapper, ThumbnailScrapper, HelperHtmlText, HelperHtmlAttr, PageScrapper, \
+    HelperJson
 
 url = "https://www.pigeaultimmobilier.com/location/?sous-categorie%5B%5D=1455&agences%5B%5D=26548&prix_min=500&prix_max=950&submitted=1&o=date-desc&action=load_search_results&wia_6_type=location&searchOnMap=0&wia_1_reference="
 
@@ -12,13 +12,13 @@ url = "https://www.pigeaultimmobilier.com/location/?sous-categorie%5B%5D=1455&ag
 
 class PigeaultAnnonceScrapper(PageScrapper):
     DOMAIN="www.pigeaultimmobilier.com"
-    QUERY_ID = AutoAttr(".estate", "data-id")
-    QUERY_TITLE = AutoText("#contenu > h2 > span")
-    QUERY_PRIX = AutoText(".prix")
-    QUERY_CONTENT = AutoText("#contenu > p")
-    QUERY_ADDRESS = AutoText("small.h6")
-    QUERY_SURFACE = AutoText(".surface")
-    QUERY_PHONES = AutoAttr("#phone-top", "data-number", cast=lambda x: [x])
+    QUERY_ID = HelperHtmlAttr(".estate", "data-id")
+    QUERY_TITLE = HelperHtmlText("#contenu > h2 > span")
+    QUERY_PRIX = HelperHtmlText(".prix")
+    QUERY_CONTENT = HelperHtmlText("#contenu > p")
+    QUERY_ADDRESS = HelperHtmlText("small.h6")
+    QUERY_SURFACE = HelperHtmlText(".surface")
+    QUERY_PHONES = HelperHtmlAttr("#phone-top", "data-number", cast=lambda x: [x])
 
     def get_id(self):
         for x in self.d("article"):
@@ -26,19 +26,18 @@ class PigeaultAnnonceScrapper(PageScrapper):
 
     def get_imgs(self):
         ret = []
-        for x in self.d("figure > a > img"):
-            img = x.attrib.get('src')
+        for x in self.d("figure>a>img"):
+            img = x.attrib.get('data-lazy', x.attrib.get('data-src'))
             if img:
                 ret.append(img)
-
         return ret
 
 class PigeaultThubnailScrapper(ThumbnailScrapper):
     DOMAIN="www.pigeaultimmobilier.com"
-    QUERY_TITLE =  AutoAttr("img", "alt")
-    QUERY_ID = AutoAttr("article", "id")
-    QUERY_PRIX = AutoText(".prix")
-    QUERY_URL = AutoAttr("article>div>a", "href")
+    QUERY_TITLE =  HelperHtmlAttr("img", "alt")
+    QUERY_ID = HelperHtmlAttr("article", "id")
+    QUERY_PRIX = HelperHtmlText(".prix")
+    QUERY_URL = HelperHtmlAttr("article>div>a", "href")
 
 
 
@@ -49,15 +48,12 @@ class PigeaultScrapper(ListScrapper):
         return [ x for x in self.d("article")]
 
 
-PigeaultThubnailScrapper.register()
-PigeaultAnnonceScrapper.register()
-PigeaultScrapper.register()
-
 if __name__ == "__main__":
-    x = ListScrapper.scrap(url)
-    for v in x.data:
+    from logement.libs.scrapper import scrap
+    x = scrap(url)
+    for v in x.elements:
         d = v.visit()
-        print(f"ID = {d.id}")
+        print(f"ID = {d.custom_id}")
         print(f"title = {d.title}")
         print(f"content = {d.content}")
         print(f"imgs = {d.imgs}")

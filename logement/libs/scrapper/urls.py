@@ -1,8 +1,10 @@
 from django.conf import settings
 
+from logement.libs.scrapper.base.request import Post
 from logement.libs.scrapper.sites.square_habitat import SquarePost
 
 LOOKUP_URLS = [
+    "https://www.century21.fr/annonces/f/location-appartement/cpv-35000_rennes/s-55-90/st-0-/b-0-950/p-3-4/",
     "http://www.dany-richard-immo.com/location/",
     SquarePost("https://www.squarehabitat.fr/", {
         "ctl00$menuheader$txtSearchD": "",
