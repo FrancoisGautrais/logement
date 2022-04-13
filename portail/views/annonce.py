@@ -1,5 +1,7 @@
 import datetime
+import json
 import sys
+import urllib.parse
 
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -49,37 +51,73 @@ def write_exception(exc : ScrapRuntimeException):
         file.flush()
 
 
+def strify(x):
+    return {
+        str(k): v if isinstance(v, (int, bool, float, str)) or v is None else str(v) for k, v in x.items()
+    }
+
+
 
 # Create your views here.
 def poll(req : HttpRequest):
     news=[]
     filtereds = []
+    ret = {}
     for url in LOOKUP_URLS:
+        _url = str(url)
+        domain = {
+            "url" : _url,
+            "elements" : [],
+            "error" : False,
+        }
+        ret[_url.split("?")[0]]=domain
+
         try:
             scrapped = scrapper.scrap(url)
         except ScrapRuntimeException as exc:
             write_exception(exc)
+            domain["error"]=True
             continue
 
         for thubnail in scrapped.elements:
             current = thubnail.__class__
+
+            page = {
+                "thubnail" : None,
+                "error" : False,
+                "visited": False,
+                "page" : None,
+                "added" : False
+            }
+            domain["elements"].append(page)
             try:
                 js = thubnail.as_dict()
+                page["thubnail"]=strify(js)
+
                 if not Annonce.exists(js):
                     complete = thubnail.visit()
+                    page["visited"]=True
+
                     current = complete.__class__
                     complete_js = complete.as_dict()
                     complete_js["url"]=js.get("url")
+
+                    page["page"]=strify(complete_js)
+
                     if not Annonce.exists(complete_js):
                         obj = Annonce.create(complete_js)
                         if obj.is_relevant and obj.score>=settings.CRITERES.get("score.min", 0):
                             filtereds.append(obj)
                         news.append(obj)
 
+                        page["added"] = True
+
             except ScrapRuntimeException as exc:
+                page["error"] = True
                 write_exception(exc)
                 continue
             except Exception as exc:
+                page["error"] = True
                 ex = ScrapRuntimeException(exc, current)
                 write_exception(ex)
                 continue
@@ -87,7 +125,17 @@ def poll(req : HttpRequest):
     if filtereds:
         notify(req, filtereds)
     Options.set("last_poll", str(datetime.datetime.now()))
-    return HttpResponse(len(news))
+
+    data = {
+        "nb_added" : len(news),
+        "nb_relevant_added" : len(filtereds)
+    }
+    if req.GET.get("verbose", "").lower() not in ("", "0", "false"):
+        data["domains"] = ret
+
+
+
+    return HttpResponse(json.dumps(data, indent=2), content_type="application/json" )
 
 def update_score(request : HttpRequest):
     score.reload()

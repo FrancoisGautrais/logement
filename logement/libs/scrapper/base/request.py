@@ -69,9 +69,18 @@ class Request:
         return None
 
 
+    def __str__(self):
+        return f"{self.method}.{self.url}"
+
+
+    def __repr__(self):
+        return self.__str__()
+
 class Get(Request):
     def __init__(self, url, data=None, headers=None, **kwargs):
         super().__init__("GET", url, data, headers, **kwargs)
+
+
 
 class Post(Request):
     def __init__(self, url, data=None, headers=None, **kwargs):
