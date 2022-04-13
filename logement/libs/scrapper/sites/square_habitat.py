@@ -127,27 +127,26 @@ class SquareHabitatScrapper(ListScrapper):
 
 
 post = SquarePost("https://www.squarehabitat.fr/", {
-        "ctl00$menuheader$txtSearchD" :"",
-        "ctl00$menuheader$txtSearchM" :"",
-        "token" :"",
-        "ctl00$cphContent$ctl00$typeProjet" :"1",
-        "ctl00$cphContent$ctl00$txtGeoloc1A" :"RENNES+(35000)",
-        "ctl00$cphContent$ctl00$search_id1A" :"35238_3",
-        "ctl00$cphContent$ctl00$typeBien" :"1",
-        "ctl00$cphContent$ctl00$surfaceMini" :"60+m²",
-        "ctl00_cphContent_ctl00_surfaceMini_ClientState" :"{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"60\",\"valueAsString\":\"60\",\"minValue\":0,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"60+m²\"}",
-        "ctl00$cphContent$ctl00$prixMini" :"600+€",
-        "ctl00_cphContent_ctl00_prixMini_ClientState" :"{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"600\",\"valueAsString\":\"600\",\"minValue\":0,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"600+€\"}",
-        "ctl00$cphContent$ctl00$prixMaxi" :"950+€",
-        "ctl00_cphContent_ctl00_prixMaxi_ClientState" :"{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"950\",\"valueAsString\":\"950\",\"minValue\":1,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"950+€\"}",
-        "ctl00$cphContent$ctl00$pieces" :"3",
-        "ctl00$cphContent$ctl00$txtReference" :"",
-        "ctl00$cphContent$ctl05$txtGeoloc5A_1" :"",
-        "ctl00$cphContent$ctl05$search_id5A_1" :"",
-        "ctl00$cphContent$ctl05$txtGeoloc5A_2" :"",
-        "ctl00$cphContent$ctl05$search_id5A_2" :"",
-})
-
+        "ctl00$menuheader$txtSearchD": "",
+        "ctl00$menuheader$txtSearchM": "",
+        "token": "",
+        "ctl00$cphContent$ctl00$typeProjet": "1",
+        "ctl00$cphContent$ctl00$txtGeoloc1A": "RENNES+(35000)",
+        "ctl00$cphContent$ctl00$search_id1A": "35238_3",
+        "ctl00$cphContent$ctl00$typeBien": "1",
+        "ctl00$cphContent$ctl00$surfaceMini": "60+m²",
+        "ctl00_cphContent_ctl00_surfaceMini_ClientState": "{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"60\",\"valueAsString\":\"60\",\"minValue\":0,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"60+m²\"}",
+        "ctl00$cphContent$ctl00$prixMini": "600+€",
+        "ctl00_cphContent_ctl00_prixMini_ClientState": "{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"600\",\"valueAsString\":\"600\",\"minValue\":0,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"600+€\"}",
+        "ctl00$cphContent$ctl00$prixMaxi": "950+€",
+        "ctl00_cphContent_ctl00_prixMaxi_ClientState": "{\"enabled\":true,\"emptyMessage\":\"\",\"validationText\":\"950\",\"valueAsString\":\"950\",\"minValue\":1,\"maxValue\":70368744177664,\"lastSetTextBoxValue\":\"950+€\"}",
+        "ctl00$cphContent$ctl00$pieces": "3",
+        "ctl00$cphContent$ctl00$txtReference": "",
+        "ctl00$cphContent$ctl05$txtGeoloc5A_1": "",
+        "ctl00$cphContent$ctl05$search_id5A_1": "",
+        "ctl00$cphContent$ctl05$txtGeoloc5A_2": "",
+        "ctl00$cphContent$ctl05$search_id5A_2": "",
+    })
 if __name__ == "__main__":
     from logement.libs.scrapper import scrap
     x = scrap(post)
