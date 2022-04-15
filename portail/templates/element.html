@@ -1,98 +1,95 @@
-{{ liste|length }} résultats relavant
+<!DOCTYPE html>
+<html lang="fr">
 
-{% for elem in liste %}
-<div class="element">
-    <div class="div-left">
-        <center>
-            <img src="{{elem.image}}"/>
-        </center>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>{{ liste|length }} résultats</title>
+    <link href="/third-party/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="/css/liste.css" rel="stylesheet" >
+
+</head>
+<body>
+
+<script src="/third-party/jquery-3.6.0.slim.min.js"></script>
+<script src="/third-party/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"></script>
+<script src="/third-party/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"></script>
+
+
+<div class="container">
+    <h1>{{ liste|length }} résultats pertinents</h1>
+
+    {% for elem in liste %}
+    <div class="element row ">
+        <div class="col-sm-12 col-md-3 div-left">
+        </div>
+        <div class="col-sm-12 col-md-9 div-right">
+            <h2><a href="/annonce/{{elem.id}}">{{elem.title}}</a></h2>
+        </div>
+
+        <div class="col-sm-12 col-md-3 div-left">
+            <center>
+                <a href="{{elem.image}}"><img src="{{elem.image}}"/></a>
+            </center>
+        </div>
+        <div class="col-sm-12 col-md-9 div-right">
+            <p>{{elem.content}}</p>
+            <table  class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>{{elem.id}}</td>
+                    </tr>
+                    <tr>
+                        <td>Surface</td>
+                        <td>{{elem.surface}} m²</td>
+                    </tr>
+                    <tr>
+                        <td>Loyer</td>
+                        <td>{{elem.prix}} €</td>
+                    </tr>
+                    <tr>
+                        <td>Age</td>
+                        <td>{{elem.age}}</td>
+                    </tr>
+                    <tr>
+                        <td>Score</td>
+                        <td>{{elem.score}}</td>
+                    </tr>
+                    <tr>
+                        <td>Site</td>
+                        <td>{{elem.domain}}</td>
+                    </tr>
+                    <tr>
+                        <td>Téléphone</td>
+                        <td>{{elem.phone}}</td>
+                    </tr>
+                    <tr>
+                        <td>Addresse / localisation</td>
+                        <td>{{elem.adresse}}</td>
+                    </tr>
+                    <tr>
+                        <td>Lien</td>
+                        <td><a href="{{elem.url}}">Lien</a></td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>
+                            {% if elem.disable %}
+                                <a href="/annonce/enable/{{elem.id}}">Activer</a>
+                            {% else %}
+                                <a href="/annonce/disable/{{elem.id}}">Désctiver</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="div-right">
-        <small></small>
-        <h1><a href="/annonce/{{elem.id}}">{{elem.title}}</a></h1>
-        <p>{{elem.content}}</p>
-        <table>
-            <tbody>
-                <tr>
-                    <td>id</td>
-                    <td>{{elem.id}}</td>
-                </tr>
-                <tr>
-                    <td>Surface</td>
-                    <td>{{elem.surface}} m²</td>
-                </tr>
-                <tr>
-                    <td>Loyer</td>
-                    <td>{{elem.prix}} €</td>
-                </tr>
-                <tr>
-                    <td>Age</td>
-                    <td>{{elem.age}}</td>
-                </tr>
-                <tr>
-                    <td>Score</td>
-                    <td>{{elem.score}}</td>
-                </tr>
-                <tr>
-                    <td>Site</td>
-                    <td>{{elem.domain}}</td>
-                </tr>
-                <tr>
-                    <td>Téléphone</td>
-                    <td>{{elem.phone}}</td>
-                </tr>
-                <tr>
-                    <td>Addresse / localisation</td>
-                    <td>{{elem.adresse}}</td>
-                </tr>
-                <tr>
-                    <td>Lien</td>
-                    <td><a href="{{elem.url}}">Lien</a></td>
-                </tr>
-                <tr>
-                    <td>Action</td>
-                    <td>
-                        {% if elem.disable %}
-                            <a href="/annonce/enable/{{elem.id}}">Activer</a>
-                        {% else %}
-                            <a href="/annonce/disable/{{elem.id}}">Désctiver</a>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    {% endfor %}
+
 </div>
-{% endfor %}
-
-<style>
-.element{
-    display: flex;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.div-left{
-    width: 20%;
-    height: 100%;
-}
 
 
-.div-left > center {
-    vertical-align: middle;
-    display: inline;
-}
-
-.div-left > center > img{
-    max-height: 100%;
-    max-width: 100%;
-    vertical-align: middle;
-    display: inline;
-}
-
-.div-right{
-    padding-left: 5px;
-    width: 60%;
-}
-</style>
+</body>
+</html>

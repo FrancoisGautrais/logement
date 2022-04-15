@@ -1,0 +1,30 @@
+
+.element{
+    display: flex;
+    border: 3px solid #aaa;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+
+.div-left{
+    height: 100%;
+}
+
+
+.div-left > center {
+    vertical-align: middle;
+    display: inline;
+}
+
+.div-left > center > a > img{
+    max-height: 100%;
+    max-width: 100%;
+    vertical-align: middle;
+    display: inline;
+    margin-bottom: 10px;
+}
+
+.div-right{
+    padding-left: 5px;
+}

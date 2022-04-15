@@ -1,87 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ liste|length }} résultats</title>
+    <link href="/third-party/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-<div class="element">
-    <div class="div-left">
-        <center>
-            <img src="{{elem.image}}"/>
-        </center>
-    </div>
-    <div class="div-right">
-        <small></small>
-        <h1><a href="{{elem.url}}">{{elem.title}}</a></h1>
-        <p>{{elem.content}}</p>
-        <table>
-            <tbody>
-                <tr>
-                    <td>id</td>
-                    <td>{{elem.id}}</td>
-                </tr>
-                <tr>
-                    <td>Surface</td>
-                    <td>{{elem.surface}} m²</td>
-                </tr>
-                <tr>
-                    <td>Loyer</td>
-                    <td>{{elem.prix}} €</td>
-                </tr>
-                <tr>
-                    <td>Age</td>
-                    <td>{{elem.age}}</td>
-                </tr>
-                <tr>
-                    <td>Score</td>
-                    <td>{{elem.score}}</td>
-                </tr>
-                <tr>
-                    <td>Site</td>
-                    <td>{{elem.domain}}</td>
-                </tr>
-                <tr>
-                    <td>Téléphone</td>
-                    <td>{{elem.phone}}</td>
-                </tr>
-                <tr>
-                    <td>Addresse / localisation</td>
-                    <td>{{elem.adresse}}</td>
-                </tr>
-                <tr>
-                    <td>Lien</td>
-                    <td><a href="{{elem.url}}">Lien</a></td>
-                </tr>
-                <tr>
-                    <td>Action</td>
-                    <td>
-                        {% if elem.disable %}
-                            <a href="/annonce/enable/{{elem.id}}">Activer</a>
-                        {% else %}
-                            <a href="/annonce/disable/{{elem.id}}">Désctiver</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Mot inclus</td>
-                    <td>{{elem.include}}</td>
-                </tr>
-                <tr>
-                    <td>Mot exclus</td>
-                    <td>{{elem.exclude}}</td>
-                </tr>
-                <tr>
-                    <td>Pertinent</td>
-                    <td>
-                        {% if elem.is_relevant %}
-                            Oui
-                        {% else %}
-                            Non
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+</head>
+<body>
+
+<script src="/third-party/jquery-3.6.0.slim.min.js"></script>
+<script src="/third-party/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"></script>
+<script src="/third-party/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"></script>
+
+<div class="container">
+
+    <div class="row ">
+        <div class="col-sm-12 col-md-12">
+
+            <h1><a href="/annonce/{{elem.id}}">{{elem.title}}</a></h1>
+            <p>{{elem.content}}</p>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td>id</td>
+                        <td>{{elem.id}}</td>
+                    </tr>
+                    <tr>
+                        <td>Surface</td>
+                        <td>{{elem.surface}} m²</td>
+                    </tr>
+                    <tr>
+                        <td>Loyer</td>
+                        <td>{{elem.prix}} €</td>
+                    </tr>
+                    <tr>
+                        <td>Age</td>
+                        <td>{{elem.age}}</td>
+                    </tr>
+                    <tr>
+                        <td>Score</td>
+                        <td>{{elem.score}}</td>
+                    </tr>
+                    <tr>
+                        <td>Site</td>
+                        <td>{{elem.domain}}</td>
+                    </tr>
+                    <tr>
+                        <td>Téléphone</td>
+                        <td>{{elem.phone}}</td>
+                    </tr>
+                    <tr>
+                        <td>Addresse / localisation</td>
+                        <td>{{elem.adresse}}</td>
+                    </tr>
+                    <tr>
+                        <td>Lien</td>
+                        <td><a href="{{elem.url}}">Lien</a></td>
+                    </tr>
+                    <tr>
+                        <td>Action</td>
+                        <td>
+                            {% if elem.disable %}
+                                <a href="/annonce/enable/{{elem.id}}">Activer</a>
+                            {% else %}
+                                <a href="/annonce/disable/{{elem.id}}">Désctiver</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mot inclus</td>
+                        <td>{{elem.include}}</td>
+                    </tr>
+                    <tr>
+                        <td>Mot exclus</td>
+                        <td>{{elem.exclude}}</td>
+                    </tr>
+                    <tr>
+                        <td>Pertinent</td>
+                        <td>
+                            {% if elem.is_relevant %}
+                                Oui
+                            {% else %}
+                                Non
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 {% for img in elem.images %}
-     <img src="{{img}}"/>
+     <center><a href="{{img}}"><img src="{{img}}"/></a></center>
 {% endfor %}
 
 <style>
@@ -115,3 +125,8 @@
     width: 60%;
 }
 </style>
+
+
+
+</body>
+</html>

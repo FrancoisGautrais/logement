@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Générer un dossier</title>
+    <link href="/third-party/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="/css/dossier.css" rel="stylesheet">
+
+</head>
+<body>
+
+<script src="/third-party/jquery-3.6.0.min.js"></script>
+<script src="/third-party/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"></script>
+<script src="/third-party/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"></script>
+
+
+<div class="container">
+    <h1>Générer un dossier</h1>
+    <form action="upload" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="files">Fichier </label>
+            <input type="file" name="files" id="files" class="form-control" value="{{files}}" multiple>
+        </div>
+        <div class="mb-3">
+            <label for="reference">Référence</label>
+            <input type="text" name="reference" id="reference" class="form-control" value="{{reference}}" required>
+        </div>
+        <div class="mb-3">
+            <label for="adress">Adresse / identification du logement </label>
+            <input type="text" name="adress" id="adress" class="form-control" value="{{adress}}">
+        </div>
+        <div class="mb-3">
+            <label>Note</label>
+            <textarea name="note" class="form-control">{{note}}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="password">Mot de passe </label>
+            <input type="password" name="password" id="password" class="form-control" value="{{password}}" required>
+        </div>
+        <div class="mb-3">
+            <input type="submit"  class="btn btn-primary" value="Générer">
+            <a class="btn btn-primary" onclick="gen_mail()">Générer le mail</a>
+        </div>
+    </form>
+    <div class="row">
+        <textarea id="mail" class="hidden col-sm-12"></textarea>
+    </div>
+<script>
+function gen_mail(){
+    $.get("mail?reference="+$("#reference").val() ,set_mail)
+}
+
+
+function set_mail(data){
+    $("#mail").val(data)
+    $("#mail").show()
+}
+</script>
+</div>
+</body>
+</html>
