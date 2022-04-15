@@ -6,11 +6,14 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import path
 
+from django.views.decorators.cache import never_cache
+
 from logement.libs import score
 from portail.models import Annonce, Filter
 from portail.views import annonce
 
 
+@never_cache
 def page_list(req : HttpRequest):
 
     param = req.GET or {}
@@ -35,12 +38,14 @@ def page_list(req : HttpRequest):
     }
     return render(req, "element.html",  data)
 
+@never_cache
 def page_list_all(req : HttpRequest):
     data = {
         "liste" : list(Annonce.objects.all().order_by("-creation_date"))
     }
     return render(req, "element.html",  data)
 
+@never_cache
 def filtres(req : HttpRequest):
     if req.method == "POST":
         data = req.POST
