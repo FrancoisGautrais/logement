@@ -13,7 +13,7 @@ from logement.libs.notifyer.notify import notify
 from logement.libs.scrapper.base.location_scrapper import ScrapRuntimeException
 from logement.libs.scrapper.urls import LOOKUP_URLS
 
-from portail.models import Annonce, Options
+from portail.models import Annonce, Options, Error
 
 
 def disable(req : HttpRequest, id : int):
@@ -75,12 +75,13 @@ def poll(req : HttpRequest):
         try:
             scrapped = scrapper.scrap(url)
         except ScrapRuntimeException as exc:
-            write_exception(exc)
+            Error.add(exc, obj=None, url=url)
             domain["error"]=True
             continue
 
         for thubnail in scrapped.elements:
-            current = thubnail.__class__
+            current = thubnail
+
 
             page = {
                 "thubnail" : None,
@@ -98,9 +99,9 @@ def poll(req : HttpRequest):
                     complete = thubnail.visit()
                     page["visited"]=True
 
-                    current = complete.__class__
+                    current = complete
                     complete_js = complete.as_dict()
-                    complete_js["url"]=js.get("url")
+                    url=complete_js["url"]=js.get("url")
 
                     page["page"]=strify(complete_js)
 
@@ -114,12 +115,11 @@ def poll(req : HttpRequest):
 
             except ScrapRuntimeException as exc:
                 page["error"] = True
-                write_exception(exc)
+                Error.add(exc, url=url, obj=current)
                 continue
             except Exception as exc:
                 page["error"] = True
-                ex = ScrapRuntimeException(exc, current)
-                write_exception(ex)
+                Error.add(exc, url=url, obj=current)
                 continue
 
     if filtereds:

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Erreurs</title>
+    <link rel="stylesheet" href="css/error.css">
+</head>
+<body>
+
+{% for error in liste %}
+<div class="error-description ">
+    <h2>Erreur {{error.id}}</h2>
+    <table>
+        <tbody>
+        <tr>
+            <th>Classe</th>
+            <th>{{error.classe}}</th>
+        </tr>
+        <tr>
+            <th>Domaine</th>
+            <th>{{error.domain}}</th>
+        </tr>
+        <tr>
+            <th>Url</th>
+            <th>{{error.url}}</th>
+        </tr>
+        <tr>
+            <th>Première apparition</th>
+            <th>{{error.first_date|date:'d/m/Y H:i:s'}}</th>
+        </tr>
+        <tr>
+            <th>Derniere apparition</th>
+            <th>{{error.last_date|date:'d/m/Y H:i:s'}}</th>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <th>{{error.exception_type}}</th>
+        </tr>
+        <tr>
+            <th>Contenu</th>
+            <th>{{error.content|linebreaksbr}}</th>
+        </tr>
+        <tr>
+            <th>Checksum</th>
+            <th>{{error.checksum}}</th>
+        </tr>
+        <tr>
+            <th>Supprimer</th>
+            <th><a class="{{domain.status}}" href="/errors/remove/{{error.id}}?redirect={{request.get_full_path}}">
+                Supprimer
+            </a></th>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+
+{% endfor %}
+
+</body>
+</html>

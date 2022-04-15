@@ -1,0 +1,46 @@
+.ok {
+    color: green;
+}
+
+.warning {
+    color: orange;
+}
+
+
+.error {
+    color: red;
+}
+
+table {
+}
+
+tr {
+  background-color: #eee;
+}
+
+th,
+td {
+    border-left: 1px solid #000;
+    padding: 3px;
+    text-align: left;
+    font-weight: 500;
+}
+
+th:first-child{
+    font-weight: 900;
+}
+
+tbody>tr:nth-child(2n+1) {
+  background-color: #ddd;
+}
+
+.error-description {
+}
+
+.bold {
+    font-weight: 900 !important;
+}
+
+.empty{
+    background-color: #777;
+}

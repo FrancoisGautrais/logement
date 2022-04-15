@@ -8,6 +8,7 @@ import requests
 from logement.libs.scrapper.base.connector import HtmlConnector
 from logement.libs.scrapper.base.helpers import BaseHelper, HelperHtmlText, HelperHtmlAttr, HelperJson
 from logement.libs.scrapper.base.request import Get
+from logement.libs.utils import exception_to_string
 
 
 class BadDomainException(Exception):
@@ -23,11 +24,6 @@ class ScrapRuntimeException(Exception):
         self.scrapper=str(scrapper)
         super().__init__(type(exc).__name__,exc)
 
-import traceback
-def exception_to_string(excp):
-   stack = traceback.extract_stack()[:-3] + traceback.extract_tb(excp.__traceback__)  # add limit=??
-   pretty = traceback.format_list(stack)
-   return ''.join(pretty) + '\n  {} {}'.format(excp.__class__,excp)
 
 
 class BaseScrapper:

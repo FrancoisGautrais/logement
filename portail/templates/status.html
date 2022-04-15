@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Status : {{title}}</title>
+    <link rel="stylesheet" href="css/error.css">
+</head>
+<body>
+<h1>Status : <span class="{{errors.status}}">{{errors.title}}</span></h1>
+<h2>Scrap</h2>
+<p> Dernier scrap : {{last_poll}}</p>
+<h2>Erreurs</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Domaine</th>
+            <th>État</th>
+            <th># 1h</th>
+            <th># 24h</th>
+            <th># 72h</th>
+            <th># Total</th>
+            <th>Dernière erreur</th>
+            <th>Lien</th>
+            <th>Supprimer</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="{{errors.general.status}}"><center>Général</center></td>
+            <td class="{{errors.general.status}}"><center>{{errors.general.title}}</center></td>
+            <td class="{{errors.general.status}}"><center> {{errors.general.count1}}</center></td>
+            <td class="{{errors.general.status}}"><center> {{errors.general.count24}}</center></td>
+            <td class="{{errors.general.status}}"><center> {{errors.general.count72}}</center></td>
+            <td class="{{errors.general.status}}"><center> {{errors.general.count}}</center></td>
+            <td class="{{errors.general.status}}"><center>{{errors.general.date}}</center></td>
+            <td class="{{errors.general.status}}">
+                <center>
+                {% if general.exception %}
+                    <a class="{{errors.general.status}}" href="/errors?domain={{errors.general.general}}&count=1">
+                        Lien
+                    </a>
+                {% endif %}
+                </center>
+            </td>
+            <td class="{{errors.general.status}}">
+                <center>
+                {% if general.exception %}
+                    <a class="{{errors.general.status}}" href="/errors/remove/{{errors.general.exception.id}}?redirect={{request.get_full_path}}">
+                        Supprimer
+                    </a>
+                {% endif %}
+                </center>
+            </td>
+        </tr>
+    {% for domain in errors.domains %}
+        <tr>
+            <td class="{{domain.status}}"><center>{{domain.domain}}</center></td>
+            <td class="{{domain.status}}"><center>{{domain.title}}</center></td>
+            <td class="{{domain.status}}"><center>{{domain.count1}}</center></td>
+            <td class="{{domain.status}}"><center>{{domain.count24}}</center></td>
+            <td class="{{domain.status}}"><center>{{domain.count72}}</center></td>
+            <td class="{{domain.status}}"><center> {{domain.count}}</center></td>
+            <td class="{{domain.status}}"><center>{{domain.date}}</center></td>
+            <td class="{{domain.status}}">
+                <center>
+                {% if domain.exception %}
+                    <a class="{{domain.status}}" href="/errors?domain={{domain.domain}}&count=1">
+                        Lien
+                    </a>
+                {% endif %}
+                </center>
+            </td>
+            <td class="{{domain.status}}">
+                <center>
+                {% if domain.exception %}
+                    <a class="{{domain.status}}" href="/errors/remove/{{domain.exception.id}}?redirect={{request.get_full_path}}">
+                        Supprimer
+                    </a>
+                {% endif %}
+                </center>
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td class="{{errors.status}} bold"><center>Total</center></td>
+        <td class="{{errors.status}} bold"><center>{{errors.title}}</center></td>
+        <td class="{{errors.status}} bold"><center>{{errors.count1}}</center></td>
+        <td class="{{errors.status}} bold"><center>{{errors.count24}}</center></td>
+        <td class="{{errors.status}} bold"><center>{{errors.count72}}</center></td>
+        <td class="{{errors.status}} bold"><center> {{errors.count}}</center></td>
+        <td class="{{errors.status}} bold"><center>{{errors.date|date:'d/m/Y H:i:s'}}</center></td>
+        <td class="{{errors.status}} empty">
+            <center>
+            {% if domain.exception %}
+                <a class="{{errors.status}}" href="/errors?domain={{errors.domain}}&count=1">
+                    Lien
+                </a>
+            {% endif %}
+            </center>
+        </td>
+        <td class="{{errors.status}} empty">
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+
+<h2>Annonces</h2>
+<table>
+
+</table>
+<table>
+    <thead>
+        <tr>
+            <th>Domaine</th>
+            <th># 1h</th>
+            <th># 24h</th>
+            <th># 72h</th>
+            <th># Total</th>
+            <th>Dernière annonce</th>
+            <th>Lien</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for annonce in annonces.annonces %}
+        <tr>
+            <td class=""><center><a href="{{annonce.url}}">{{annonce.domain}}</a></center></td>
+            <td class=""><center>{{annonce.count1}}</center></td>
+            <td class=""><center>{{annonce.count24}}</center></td>
+            <td class=""><center>{{annonce.count72}}</center></td>
+            <td class=""><center> {{annonce.count}}</center></td>
+            <td class=""><center>{{annonce.date|date:'d/m/Y H:i:s'}}</center></td>
+            <td class="">
+                <center>
+                {% if annonce.annonce %}
+                    <a class="" href="/annonce/{{annonce.annonce.id}}">
+                        Lien
+                    </a>
+                {% endif %}
+                </center>
+            </td>
+        </tr>
+    {% endfor %}
+
+        <tr>
+            <td class=""><center>Total</center></td>
+            <td class=""><center>{{annonces.count1}}</center></td>
+            <td class=""><center>{{annonces.count24}}</center></td>
+            <td class=""><center>{{annonces.count72}}</center></td>
+            <td class=""><center> {{annonces.count}}</center></td>
+            <td class=""><center>{{annonces.date|date:'d/m/Y H:i:s'}}</center></td>
+            <td class="empty">
+                <center>
+                </center>
+            </td>
+        </tr>
+    
+
+    </tbody>
+</table>
+
+
+
+</body>
+
+
+
+</html>

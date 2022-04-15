@@ -59,13 +59,9 @@ def filtres(req : HttpRequest):
     return render(req, "filtres.html", data)
 
 
-def errors(req: HttpRequest):
-    return HttpResponse(Path(settings.ERROR_FILE).read_text().replace("\n", "<br>"))
-
 urls = [
     path("", page_list),
     path("all", page_list_all),
     path("tous", page_list_all),
     path("filtres", filtres),
-    path("errors", errors),
 ]
