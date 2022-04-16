@@ -65,6 +65,8 @@ def strify(x):
 
 # Create your views here.
 def poll(req : HttpRequest):
+    params = req.GET or req.POST
+    redirect = params.get("redirect")
     t = time.time()
     news=[]
     filtereds = []
@@ -142,7 +144,8 @@ def poll(req : HttpRequest):
     Options.set("last_poll", str(datetime.datetime.now()))
     Options.set("last_poll_duration", time.time() - t)
     data["duration"]=time.time() - t
-
+    if redirect is not None:
+        return HttpResponseRedirect(redirect)
     return HttpResponse(json.dumps(data, indent=2), content_type="application/json" )
 
 
