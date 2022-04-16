@@ -1,6 +1,9 @@
 import re
 import traceback
 
+from django.conf import settings
+from django.http import HttpRequest, HttpResponseRedirect
+
 from logement.libs.scrapper.base.request import Request
 
 RE_FIND_DOMAIN = re.compile(r"\w+://(?P<domain>[^/:]+)")
@@ -18,5 +21,14 @@ def exception_to_string(excp):
 
 
 
+def need_auth(fct):
 
+    def wrapper(req : HttpRequest,  *args, **kwargs):
+        print(req.user.is_authenticated)
+        if req.user.is_authenticated:
+            return fct(req, *args, **kwargs)
+        else:
+            return HttpResponseRedirect(f"{settings.LOGIN_URL}?redirect={req.path}")
+
+    return wrapper
 

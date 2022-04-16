@@ -10,11 +10,12 @@ from django.urls import path
 from django.views.decorators.cache import never_cache
 
 from logement.libs.scrapper.urls import LOOKUP_URLS
-from logement.libs.utils import find_domain
+from logement.libs.utils import find_domain, need_auth
 from portail.models import Error, Options, Annonce
 
 
 @never_cache
+@need_auth
 def errors(req: HttpRequest):
     post = (req.POST if hasattr(req, "POST") else None) or {}
     errors = {k: v for k, v in req.GET.items()}
@@ -46,6 +47,7 @@ TITLE_NAME = {
 
 
 @never_cache
+@need_auth
 def status(req : HttpRequest):
     WARNING_THRESOLD_SECONDS = 3600
     CLEAR_WARGING_THRESOLD_SECONDS = 3600*24*3
@@ -143,6 +145,7 @@ def status(req : HttpRequest):
     return render(req, "status.html", data)
 
 
+@need_auth
 def remove(req : HttpRequest, id : int):
     errors = {k: v for k, v in req.GET.items()}
     try:
@@ -169,6 +172,7 @@ def remove(req : HttpRequest, id : int):
     }), content_type="applciation/json")
 
 
+@need_auth
 def remove_all(req : HttpRequest, id : int):
     post = (req.POST if hasattr(req, "POST") else None) or {}
     errors = {k: v for k, v in req.GET.items()}

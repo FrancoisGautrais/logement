@@ -6,9 +6,10 @@ from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Notification, Message
 
 from logement.libs.notifyer import push
+from logement.libs.utils import need_auth
 
 
-
+@need_auth
 def token(req : HttpRequest, token : str):
     x = len(FCMDevice.objects.filter(registration_id=token))
     if not x:
@@ -19,11 +20,13 @@ def token(req : HttpRequest, token : str):
         )
     return HttpResponse()
 
+@need_auth
 def send(req : HttpRequest):
     push.send_notif_to_all("Tets", "Ça marche")
     return HttpResponse()
 
 
+@need_auth
 def subscribe_page(req : HttpRequest):
     return render(req, "subscribe.html",  {})
 

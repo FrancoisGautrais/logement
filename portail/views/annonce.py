@@ -12,10 +12,12 @@ from logement.libs import scrapper, score
 from logement.libs.notifyer.notify import notify
 from logement.libs.scrapper.base.location_scrapper import ScrapRuntimeException
 from logement.libs.scrapper.urls import LOOKUP_URLS
+from logement.libs.utils import need_auth
 
 from portail.models import Annonce, Options, Error
 
 
+@need_auth
 def disable(req : HttpRequest, id : int):
     elem = Annonce.objects.get(id=id)
     elem.disable=True
@@ -23,6 +25,7 @@ def disable(req : HttpRequest, id : int):
     return HttpResponseRedirect("/")
 
 
+@need_auth
 def enable(req : HttpRequest, id : int):
     elem = Annonce.objects.get(id=id)
     elem.disable=False
@@ -31,6 +34,7 @@ def enable(req : HttpRequest, id : int):
 
 
 
+@need_auth
 def show_annonce(req : HttpRequest, id : int):
     elem = Annonce.objects.get(id=id)
     data = {
@@ -136,6 +140,7 @@ def poll(req : HttpRequest):
 
 
     return HttpResponse(json.dumps(data, indent=2), content_type="application/json" )
+
 
 def update_score(request : HttpRequest):
     score.reload()

@@ -11,7 +11,10 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import path
 
+from logement.libs.utils import need_auth
 
+
+@need_auth
 def download(req : HttpRequest, id : str):
     cache = settings.CACHE_PATH / f"{id}.zip"
     if cache.is_file():
@@ -76,6 +79,7 @@ def integrate_zip(dir, data):
 
 
 
+@need_auth
 def upload(request : HttpRequest):
     if request.method == 'POST':
         if settings.PASSWORD != request.POST.get("password"):
@@ -93,12 +97,14 @@ def upload(request : HttpRequest):
                 "Content-Type" : "application/zip"
             })
 
+@need_auth
 def page(req : HttpRequest):
     data = defaultdict(str)
     data.update(req.GET or req.POST)
     data = { k: x[0] if x else "" for k, x in data.items()}
     return render(req, "dossier.html", data)
 
+@need_auth
 def mail(req : HttpRequest):
     data = { k: v[0] if isinstance(v, (list,tuple)) else v for k, v in (req.POST or req.GET).items()}
     return render(req, "mail", data, content_type="text/plain")

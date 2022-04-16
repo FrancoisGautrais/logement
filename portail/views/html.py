@@ -9,11 +9,13 @@ from django.urls import path
 from django.views.decorators.cache import never_cache
 
 from logement.libs import score
+from logement.libs.utils import need_auth
 from portail.models import Annonce, Filter
 from portail.views import annonce
 
 
 @never_cache
+@need_auth
 def page_list(req : HttpRequest):
 
     param = req.GET or {}
@@ -39,6 +41,7 @@ def page_list(req : HttpRequest):
     return render(req, "element.html",  data)
 
 @never_cache
+@need_auth
 def page_list_all(req : HttpRequest):
     data = {
         "liste" : list(Annonce.objects.all().order_by("-creation_date"))
@@ -46,6 +49,7 @@ def page_list_all(req : HttpRequest):
     return render(req, "element.html",  data)
 
 @never_cache
+@need_auth
 def filtres(req : HttpRequest):
     if req.method == "POST":
         data = req.POST

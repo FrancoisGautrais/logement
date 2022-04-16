@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="/third-party/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="card" style="margin-top: 7rem;">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <p class="card-text">Indiquer votre login et mot de passe</p>
+            {% if message %}
+            <p class="card-text text-danger">{{message}}</p>
+            {% endif %}
+
+            <form action="/login" method="POST">
+                <div class="mb-3">
+                    <label for="login" class="form-label">Login</label>
+                    <input type="text" id="login" class="form-control" name="username" placeholder="Login">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de pass</label>
+                    <input type="password" id="password" name="password"  class="form-control" placeholder="Mot de passe">
+                </div>
+                <input type="text"  name="redirect" style="display: none;" value="{{redirect}}">
+
+                <button type="submit" class="btn btn-primary">S'enregistrer</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

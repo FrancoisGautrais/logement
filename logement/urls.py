@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from portail.views import annonce, dossier, html, messaging, debug, errors
+from portail.views import annonce, dossier, html, messaging, debug, errors, auth
 from portail.views.static import find_static_files
 
 urlpatterns = [
@@ -26,4 +26,5 @@ urlpatterns = [
     path("debug/", include(debug.urls)),
     path("", include(messaging.urls)),
     path("", include(errors.urls)),
+    path("", include(auth.urls)),
 ] +  find_static_files()

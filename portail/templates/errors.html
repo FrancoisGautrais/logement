@@ -4,57 +4,64 @@
     <meta charset="UTF-8">
     <title>Erreurs</title>
     <link rel="stylesheet" href="css/error.css">
+    <link href="/third-party/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
+<script src="/third-party/jquery-3.6.0.min.js"></script>
+<script src="/third-party/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"></script>
+<script src="/third-party/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"></script>
 
-{% for error in liste %}
-<div class="error-description ">
-    <h2>Erreur {{error.id}}</h2>
-    <table>
-        <tbody>
-        <tr>
-            <th>Classe</th>
-            <th>{{error.classe}}</th>
-        </tr>
-        <tr>
-            <th>Domaine</th>
-            <th>{{error.domain}}</th>
-        </tr>
-        <tr>
-            <th>Url</th>
-            <th>{{error.url}}</th>
-        </tr>
-        <tr>
-            <th>Première apparition</th>
-            <th>{{error.first_date|date:'d/m/Y H:i:s'}}</th>
-        </tr>
-        <tr>
-            <th>Derniere apparition</th>
-            <th>{{error.last_date|date:'d/m/Y H:i:s'}}</th>
-        </tr>
-        <tr>
-            <th>Type</th>
-            <th>{{error.exception_type}}</th>
-        </tr>
-        <tr>
-            <th>Contenu</th>
-            <th>{{error.content|linebreaksbr}}</th>
-        </tr>
-        <tr>
-            <th>Checksum</th>
-            <th>{{error.checksum}}</th>
-        </tr>
-        <tr>
-            <th>Supprimer</th>
-            <th><a class="{{domain.status}}" href="/errors/remove/{{error.id}}?redirect={{request.get_full_path}}">
-                Supprimer
-            </a></th>
-        </tr>
+{% include "nav.html" %}
+<div class="container">
+    <h1>{{shown}} / {{count}} erreur(s)</h1>
+    {% for error in liste %}
+    <div class="error-description ">
+        <h2>Erreur {{error.id}}</h2>
+        <table>
+            <tbody>
+            <tr>
+                <th>Classe</th>
+                <th>{{error.classe}}</th>
+            </tr>
+            <tr>
+                <th>Domaine</th>
+                <th>{{error.domain}}</th>
+            </tr>
+            <tr>
+                <th>Url</th>
+                <th>{{error.url}}</th>
+            </tr>
+            <tr>
+                <th>Première apparition</th>
+                <th>{{error.first_date|date:'d/m/Y H:i:s'}}</th>
+            </tr>
+            <tr>
+                <th>Derniere apparition</th>
+                <th>{{error.last_date|date:'d/m/Y H:i:s'}}</th>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <th>{{error.exception_type}}</th>
+            </tr>
+            <tr>
+                <th>Contenu</th>
+                <th>{{error.content|linebreaksbr}}</th>
+            </tr>
+            <tr>
+                <th>Checksum</th>
+                <th>{{error.checksum}}</th>
+            </tr>
+            <tr>
+                <th>Supprimer</th>
+                <th><a class="{{domain.status}}" href="/errors/remove/{{error.id}}?redirect={{request.get_full_path}}">
+                    Supprimer
+                </a></th>
+            </tr>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
-
 {% endfor %}
 
 </body>
