@@ -1,14 +1,14 @@
 .ok {
-    color: green;
+    color: green !important;
 }
 
 .warning {
-    color: orange;
+    color: orange !important;
 }
 
 
 .error {
-    color: red;
+    color: red !important;
 }
 
 table {
