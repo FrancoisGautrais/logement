@@ -136,7 +136,7 @@ class LocationElemScrapper(BaseScrapper):
 
     def check_imgs(self):
         out=[]
-        for url in self.imgs:
+        for url in self.imgs or []:
             if url is None: continue
             if url.startswith(("data:", "http:", 'https:',)):
                out.append(url)
