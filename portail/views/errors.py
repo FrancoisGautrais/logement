@@ -119,7 +119,7 @@ def status(req : HttpRequest):
             "url" : url
         })
 
-
+    dates = [x.get("date") for x in domains+[general] if x.get("date")]
     data = {
         "annonces" : {
             "annonces" : annonces_by_domains,
@@ -138,7 +138,7 @@ def status(req : HttpRequest):
             "count1" : sum(x.get("count1") for x in domains+[general]),
             "count24" : sum(x.get("count24") for x in domains+[general]),
             "count72" : sum(x.get("count72") for x in domains+[general]),
-            "date" : min(x.get("date") for x in domains+[general] if x.get("date")),
+            "date" : min(dates) if dates else "",
         },
         "request" : req,
         "last_poll" : Options.get_value("last_poll", "aucun"),
