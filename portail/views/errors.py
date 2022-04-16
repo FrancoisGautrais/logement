@@ -97,6 +97,8 @@ def status(req : HttpRequest):
 
     general = domains.pop()
 
+    duration = Options.get_value("last_poll_duration")
+    duration = ("%.3fs" % duration) if duration else "- s"
     annonces_by_domains=[]
     for url in LOOKUP_URLS:
         domaine = find_domain(url)
@@ -139,7 +141,8 @@ def status(req : HttpRequest):
             "date" : min(x.get("date") for x in domains+[general] if x.get("date")),
         },
         "request" : req,
-        "last_poll" : Options.get_value("last_poll", "aucun")
+        "last_poll" : Options.get_value("last_poll", "aucun"),
+        "last_poll_duration" : duration,
     }
 
     return render(req, "status.html", data)

@@ -1,6 +1,7 @@
 import datetime
 import json
 import sys
+import time
 import urllib.parse
 
 from django.conf import settings
@@ -64,6 +65,7 @@ def strify(x):
 
 # Create your views here.
 def poll(req : HttpRequest):
+    t = time.time()
     news=[]
     filtereds = []
     ret = {}
@@ -128,7 +130,6 @@ def poll(req : HttpRequest):
 
     if filtereds:
         notify(req, filtereds)
-    Options.set("last_poll", str(datetime.datetime.now()))
 
     data = {
         "nb_added" : len(news),
@@ -138,6 +139,9 @@ def poll(req : HttpRequest):
         data["domains"] = ret
 
 
+    Options.set("last_poll", str(datetime.datetime.now()))
+    Options.set("last_poll_duration", time.time() - t)
+    data["duration"]=time.time() - t
 
     return HttpResponse(json.dumps(data, indent=2), content_type="application/json" )
 
