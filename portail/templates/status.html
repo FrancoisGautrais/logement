@@ -38,7 +38,7 @@
                 <td class="{{errors.general.status}}"><center> {{errors.general.count24}}</center></td>
                 <td class="{{errors.general.status}}"><center> {{errors.general.count72}}</center></td>
                 <td class="{{errors.general.status}}"><center> {{errors.general.count}}</center></td>
-                <td class="{{errors.general.status}}"><center>{{errors.general.date}}</center></td>
+                <td class="{{errors.general.status}}"><center>{{errors.general.date|date:'d/m/Y H:i:s'}}</center></td>
                 <td class="{{errors.general.status}}">
                     <center>
                     {% if general.exception %}
@@ -66,7 +66,7 @@
                 <td class="{{domain.status}}"><center>{{domain.count24}}</center></td>
                 <td class="{{domain.status}}"><center>{{domain.count72}}</center></td>
                 <td class="{{domain.status}}"><center> {{domain.count}}</center></td>
-                <td class="{{domain.status}}"><center>{{domain.date}}</center></td>
+                <td class="{{domain.status}}"><center>{{domain.date|date:'d/m/Y H:i:s'}}</center></td>
                 <td class="{{domain.status}}">
                     <center>
                     {% if domain.exception %}
